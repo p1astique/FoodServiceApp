@@ -1,0 +1,29 @@
+# .NET build output
+**/bin/
+**/obj/
+
+# IDE and user-specific settings
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Local secrets and environment overrides
+.env
+.env.*
+!.env.example
+**/appsettings.Development.local.json
+**/appsettings.Local.json
+
+# Test and coverage output
+TestResults/
+coverage/
+*.coverage
+*.coveragexml
+
+# OS files
+.DS_Store
+Thumbs.db
