@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:FoodServiceApp.Maui.Models"
+             x:Class="FoodServiceApp.Maui.Views.TrangChuPage"
+             Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto,*">
+
+        <!-- Header xanh lá: vị trí, thông báo, icon tài khoản, ô tìm kiếm -->
+        <Frame Grid.Row="0" BackgroundColor="{StaticResource Primary}" CornerRadius="0"
+               Padding="18,14,18,18" HasShadow="False">
+            <VerticalStackLayout Spacing="10">
+                <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="8">
+                    <Label Grid.Column="0" Text="📍" TextColor="White" />
+                    <Label Grid.Column="1" Text="123 Lý Thường Kiệt, Q.10, TP.HCM"
+                           TextColor="White" FontSize="13" LineBreakMode="TailTruncation" />
+                    <Label Grid.Column="2" Text="🔔" TextColor="White" />
+                    <Label Grid.Column="3" Text="👤" TextColor="White">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnTaiKhoanTapped" />
+                        </Label.GestureRecognizers>
+                    </Label>
+                </Grid>
+                <Label Text="Hôm nay bạn muốn ăn gì?" TextColor="White" FontSize="18" FontAttributes="Bold" />
+                <Frame BackgroundColor="White" CornerRadius="10" Padding="12,10" HasShadow="False">
+                    <Entry x:Name="EntryTimKiem" Placeholder="Tìm món ăn, quán ăn..."
+                           BackgroundColor="Transparent" />
+                </Frame>
+            </VerticalStackLayout>
+        </Frame>
+
+        <!-- Danh sách gian hàng -->
+        <CollectionView Grid.Row="1" x:Name="DsGianHang" Margin="16"
+                         SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:GianHang">
+                    <Frame Style="{StaticResource CardFrame}" Margin="0,0,0,10" Padding="0">
+                        <Frame.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnGianHangTapped" CommandParameter="{Binding .}" />
+                        </Frame.GestureRecognizers>
+                        <Grid ColumnDefinitions="80,*" Padding="0">
+                            <Frame Grid.Column="0" BackgroundColor="#1B5E3C22" CornerRadius="0"
+                                   Padding="0" HasShadow="False">
+                                <Label Text="{Binding HinhAnh}" FontSize="34"
+                                       HorizontalOptions="Center" VerticalOptions="Center" />
+                            </Frame>
+                            <VerticalStackLayout Grid.Column="1" Padding="12,10" Spacing="4">
+                                <Label Text="{Binding TenGianHang}" FontAttributes="Bold" FontSize="15" />
+                                <Label Text="{Binding DiaChi}" Style="{StaticResource SubtitleLabel}" />
+                                <Label FontSize="12.5" TextColor="{StaticResource TextGrey}">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="⭐ " />
+                                            <Span Text="{Binding DanhGia}" />
+                                            <Span Text="    ⏱ " />
+                                            <Span Text="{Binding ThoiGianGiaoPhut}" />
+                                            <Span Text=" phút" />
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                            </VerticalStackLayout>
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>

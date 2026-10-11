@@ -1,0 +1,136 @@
+@model CustomerHomeViewModel
+@{
+    ViewData["Title"] = "Trang chủ";
+    Layout = "_CustomerLayout";
+}
+
+<div class="hero-banner">
+    <div>
+        <h1>Đói bụng chưa? 🍜</h1>
+        <p>Tìm quán, món ăn và khu vực phù hợp rồi đặt hàng trong vài bước.</p>
+    </div>
+    <div class="hero-emoji">🥡</div>
+</div>
+
+<div class="category-scroll">
+    <a class="category-pill" href="@Url.Action("Index", new { tuKhoa = "cơm" })"><span class="ic">🍚</span>Cơm</a>
+    <a class="category-pill" href="@Url.Action("Index", new { tuKhoa = "bún" })"><span class="ic">🍜</span>Bún - Phở</a>
+    <a class="category-pill" href="@Url.Action("Index", new { tuKhoa = "trà sữa" })"><span class="ic">🧋</span>Trà sữa</a>
+    <a class="category-pill" href="@Url.Action("Index", new { tuKhoa = "ăn vặt" })"><span class="ic">🍕</span>Ăn vặt</a>
+    <a class="category-pill" href="@Url.Action("Index", new { tuKhoa = "cà phê" })"><span class="ic">☕</span>Cà phê</a>
+    <a class="category-pill" href="@Url.Action("Index", new { tuKhoa = "bánh" })"><span class="ic">🍰</span>Bánh</a>
+    <a class="category-pill" href="@Url.Action("Index", new { tuKhoa = "gà" })"><span class="ic">🍗</span>Gà</a>
+    <a class="category-pill" href="@Url.Action("Index", new { tuKhoa = "healthy" })"><span class="ic">🥗</span>Healthy</a>
+</div>
+
+<form method="get" class="card mb-3 customer-filter-card" style="padding:14px;">
+    <div class="customer-filter-grid">
+        <div class="filter-search">
+            <label>Từ khóa</label>
+            <input type="text" name="tuKhoa" value="@Model.TuKhoa" class="form-control" placeholder="Tên quán, món ăn, địa chỉ..." />
+        </div>
+        <div>
+            <label>Khu vực</label>
+            <input type="text" name="khuVuc" value="@Model.KhuVuc" class="form-control" placeholder="VD: Quận 1, Thủ Đức..." />
+        </div>
+        <div>
+            <label>Đánh giá</label>
+            <select name="minSao" class="form-control">
+                @if (!Model.MinSao.HasValue)
+                {
+                    <option value="" selected>Tất cả</option>
+                }
+                else
+                {
+                    <option value="">Tất cả</option>
+                }
+                @if (Model.MinSao == 5) { <option value="5" selected>⭐ 5.0</option> } else { <option value="5">⭐ 5.0</option> }
+                @if (Model.MinSao == 4) { <option value="4" selected>⭐ Từ 4.0</option> } else { <option value="4">⭐ Từ 4.0</option> }
+                @if (Model.MinSao == 3) { <option value="3" selected>⭐ Từ 3.0</option> } else { <option value="3">⭐ Từ 3.0</option> }
+            </select>
+        </div>
+        <div>
+            <label>Sắp xếp</label>
+            <select name="sapXep" class="form-control">
+                @if (Model.SapXep == "phu-hop") { <option value="phu-hop" selected>Phù hợp</option> } else { <option value="phu-hop">Phù hợp</option> }
+                @if (Model.SapXep == "danh-gia") { <option value="danh-gia" selected>Đánh giá cao</option> } else { <option value="danh-gia">Đánh giá cao</option> }
+                @if (Model.SapXep == "ten-a-z") { <option value="ten-a-z" selected>Tên A → Z</option> } else { <option value="ten-a-z">Tên A → Z</option> }
+                @if (Model.SapXep == "ten-z-a") { <option value="ten-z-a" selected>Tên Z → A</option> } else { <option value="ten-z-a">Tên Z → A</option> }
+            </select>
+        </div>
+        <div class="filter-actions">
+            <button type="submit" class="btn btn-primary">🔍 Tìm kiếm</button>
+            <a asp-action="Index" class="btn btn-outline">Đặt lại</a>
+        </div>
+    </div>
+</form>
+
+<div class="section-heading-row">
+    <h3 class="category-tab-label">Gian hàng đang mở</h3>
+    <span class="result-count">@Model.TongKetQua gian hàng</span>
+</div>
+
+@if (!string.IsNullOrWhiteSpace(Model.TuKhoa) || !string.IsNullOrWhiteSpace(Model.KhuVuc) || Model.MinSao.HasValue)
+{
+    <div class="active-filters">
+        @if (!string.IsNullOrWhiteSpace(Model.TuKhoa)) { <span>Từ khóa: <strong>@Model.TuKhoa</strong></span> }
+        @if (!string.IsNullOrWhiteSpace(Model.KhuVuc)) { <span>Khu vực: <strong>@Model.KhuVuc</strong></span> }
+        @if (Model.MinSao.HasValue) { <span>Từ <strong>@Model.MinSao.Value.ToString("0")⭐</strong></span> }
+    </div>
+}
+
+@if (!Model.DanhSachGianHang.Any())
+{
+    <div class="card"><div class="empty-state">
+        <div style="font-size:44px; margin-bottom:8px;">🔎</div>
+        Không tìm thấy gian hàng phù hợp. Hãy thử từ khóa hoặc khu vực khác.
+    </div></div>
+}
+else
+{
+    <div class="grid-4">
+        @foreach (var g in Model.DanhSachGianHang)
+        {
+            <a asp-controller="CustomerHome" asp-action="ChiTiet" asp-route-id="@g.MaGianHang" class="shop-card">
+                <div class="thumb">
+                    <span class="open-badge">Đang mở</span>
+                    @if (!string.IsNullOrEmpty(g.HinhAnh))
+                    {
+                        <img src="@g.HinhAnh" alt="@g.TenCuaHang" />
+                    }
+                    else
+                    {
+                        <span>🍲</span>
+                    }
+                </div>
+                <div class="body">
+                    <div class="name">@g.TenCuaHang</div>
+                    <div class="addr">📍 @g.DiaChi</div>
+                    @if (g.SoDanhGia > 0)
+                    {
+                        <div class="rating"><span class="stars">⭐</span> @g.DiemTrungBinh.ToString("0.0") <span>(@g.SoDanhGia đánh giá)</span></div>
+                    }
+                    else
+                    {
+                        <div class="rating text-muted">Chưa có đánh giá</div>
+                    }
+                </div>
+            </a>
+        }
+    </div>
+
+    @if (Model.TongTrang > 1)
+    {
+        <div class="customer-pagination">
+            @if (Model.Trang > 1)
+            {
+                <a class="btn btn-outline" href="@Url.Action("Index", new { tuKhoa = Model.TuKhoa, khuVuc = Model.KhuVuc, minSao = Model.MinSao, sapXep = Model.SapXep, trang = Model.Trang - 1 })">← Trước</a>
+            }
+            <span>Trang <strong>@Model.Trang</strong> / @Model.TongTrang</span>
+            @if (Model.Trang < Model.TongTrang)
+            {
+                <a class="btn btn-outline" href="@Url.Action("Index", new { tuKhoa = Model.TuKhoa, khuVuc = Model.KhuVuc, minSao = Model.MinSao, sapXep = Model.SapXep, trang = Model.Trang + 1 })">Sau →</a>
+            }
+        </div>
+    }
+}

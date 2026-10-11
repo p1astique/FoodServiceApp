@@ -1,0 +1,52 @@
+@model List<TaiXe>
+@{
+    ViewData["Title"] = "Tài xế chờ duyệt";
+    Layout = "_AdminLayout";
+}
+
+<div class="topbar">
+    <h2>Tài xế chờ duyệt</h2>
+    <a asp-action="Index" class="btn btn-outline btn-sm">← Danh sách tài xế</a>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="card"><div class="empty-state">Không có hồ sơ nào đang chờ duyệt.</div></div>
+}
+else
+{
+    <div class="grid-2">
+        @foreach (var tx in Model)
+        {
+            <div class="card">
+                <h3 style="margin-top:0;">@tx.HoTen</h3>
+                <p style="margin:4px 0;"><strong>SĐT:</strong> @tx.SDT</p>
+                @if (!string.IsNullOrEmpty(tx.PhuongTien))
+                {
+                    <p style="margin:4px 0;"><strong>Phương tiện:</strong> @tx.PhuongTien @(!string.IsNullOrEmpty(tx.BienSo) ? $"— {tx.BienSo}" : "")</p>
+                }
+                @if (!string.IsNullOrEmpty(tx.KhuVucHoatDong))
+                {
+                    <p style="margin:4px 0;"><strong>Khu vực hoạt động:</strong> @tx.KhuVucHoatDong</p>
+                }
+                <p style="margin:4px 0;" class="text-muted">Đăng ký lúc: @tx.NgayDangKy.ToString("HH:mm dd/MM/yyyy")</p>
+
+                <div style="display:flex; gap:8px; margin-top:12px;">
+                    <form asp-action="Duyet" asp-route-id="@tx.MaTaiXe" method="post" style="flex:1;">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-primary" style="width:100%;"
+                                onclick="return confirm('Duyệt hồ sơ tài xế \'@tx.HoTen\'?')">✓ Duyệt</button>
+                    </form>
+                    <button type="button" class="btn btn-danger" style="flex:1;"
+                            onclick="document.getElementById('tuchoi-@tx.MaTaiXe').style.display='block'">✕ Từ chối</button>
+                </div>
+
+                <form id="tuchoi-@tx.MaTaiXe" asp-action="TuChoi" asp-route-id="@tx.MaTaiXe" method="post" style="display:none; margin-top:10px;">
+                    @Html.AntiForgeryToken()
+                    <input type="text" name="lyDo" class="form-control" placeholder="Lý do từ chối (không bắt buộc)" />
+                    <button type="submit" class="btn btn-danger btn-sm mt-2">Xác nhận từ chối</button>
+                </form>
+            </div>
+        }
+    </div>
+}

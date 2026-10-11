@@ -1,0 +1,82 @@
+@model List<DanhMuc>
+@{
+    var gianHang = (GianHang?)ViewBag.GianHang;
+    ViewData["Title"] = gianHang?.TenCuaHang ?? "Gian hàng";
+    Layout = "_CustomerLayout";
+    var gioHang = (Cart)ViewBag.GioHang;
+}
+
+@if (gianHang == null)
+{
+    <div class="card"><div class="empty-state">Không tìm thấy gian hàng.</div></div>
+}
+else
+{
+    <div class="shop-header-cover">
+        <div class="avatar">
+            @if (!string.IsNullOrEmpty(gianHang.HinhAnh))
+            {
+                <img src="@gianHang.HinhAnh" alt="@gianHang.TenCuaHang" />
+            }
+            else { <span>🍲</span> }
+        </div>
+        <div>
+            <h2>@gianHang.TenCuaHang</h2>
+            <div class="meta">📍 @gianHang.DiaChi &nbsp;·&nbsp; ☎ @gianHang.SDT</div>
+            @if (!string.IsNullOrEmpty(gianHang.MoTa))
+            {
+                <div class="meta" style="margin-top:4px;">@gianHang.MoTa</div>
+            }
+            <div class="rating-line">⭐ @(((double)ViewBag.DiemTrungBinh).ToString("0.0")) &nbsp;(@ViewBag.SoDanhGia đánh giá)</div>
+        </div>
+    </div>
+
+    @if (!Model.Any(d => d.MonAns.Any()))
+    {
+        <div class="card"><div class="empty-state">Gian hàng chưa có món ăn nào.</div></div>
+    }
+
+    @foreach (var danhMuc in Model.Where(d => d.MonAns.Any()))
+    {
+        <h3 class="category-tab-label">@danhMuc.TenDanhMuc</h3>
+        <div class="grid-2">
+            @foreach (var mon in danhMuc.MonAns)
+            {
+                <div class="food-card">
+                    <div class="thumb">
+                        @if (!string.IsNullOrEmpty(mon.HinhAnh))
+                        {
+                            <img src="@mon.HinhAnh" alt="@mon.TenMon" />
+                        }
+                        else { <span>🍲</span> }
+                    </div>
+                    <div class="info">
+                        <div class="name"><a asp-action="ChiTietMon" asp-route-id="@mon.MaMonAn" style="color:inherit;">@mon.TenMon</a></div>
+                        <div class="price">@mon.Gia.ToString("N0")đ</div>
+                    </div>
+                    @if (mon.TinhTrang == "ConHang")
+                    {
+                        <form asp-action="ThemVaoGio" asp-route-maGianHang="@gianHang.MaGianHang" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="maMonAn" value="@mon.MaMonAn" />
+                            <input type="hidden" name="soLuong" value="1" />
+                            <button type="submit" class="btn btn-accent btn-sm">+ Thêm</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <span class="badge badge-grey">Hết hàng</span>
+                    }
+                </div>
+            }
+        </div>
+    }
+
+    @if (gioHang.Items.Any() && gioHang.MaGianHang == gianHang.MaGianHang)
+    {
+        <div class="sticky-cart-bar">
+            <span class="info">🛒 @gioHang.TongSoMon món — <span class="amount">@gioHang.TongTien.ToString("N0")đ</span></span>
+            <a asp-controller="CustomerCart" asp-action="Index" class="btn btn-primary">Xem giỏ hàng →</a>
+        </div>
+    }
+}

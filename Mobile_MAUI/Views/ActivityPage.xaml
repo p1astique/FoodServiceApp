@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FoodServiceApp.Maui.Views.ActivityPage"
+             Title="Hoạt động" Shell.NavBarIsVisible="False">
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="10">
+            <Label Text="Hoạt động" Style="{StaticResource TitleLabel}" Margin="0,0,0,6" />
+
+            <Frame Style="{StaticResource CardFrame}" BackgroundColor="#0D1B5E3C" BorderColor="#401B5E3C">
+                <HorizontalStackLayout Spacing="10">
+                    <Label Text="🛵" FontSize="20" />
+                    <VerticalStackLayout>
+                        <Label Text="Đơn #DH1029 đang được giao" FontAttributes="Bold" FontSize="13" />
+                        <Label Text="Shipper đang trên đường đến bạn" FontSize="11.5" TextColor="{StaticResource TextGrey}" />
+                        <Label Text="5 phút trước" FontSize="10.5" TextColor="{StaticResource TextGrey}" />
+                    </VerticalStackLayout>
+                </HorizontalStackLayout>
+            </Frame>
+
+            <Frame Style="{StaticResource CardFrame}" BackgroundColor="#0D1B5E3C" BorderColor="#401B5E3C">
+                <HorizontalStackLayout Spacing="10">
+                    <Label Text="🏷️" FontSize="20" />
+                    <VerticalStackLayout>
+                        <Label Text="Mã giảm giá mới: GIAM10" FontAttributes="Bold" FontSize="13" />
+                        <Label Text="Giảm 10% cho đơn từ 50.000đ" FontSize="11.5" TextColor="{StaticResource TextGrey}" />
+                        <Label Text="2 giờ trước" FontSize="10.5" TextColor="{StaticResource TextGrey}" />
+                    </VerticalStackLayout>
+                </HorizontalStackLayout>
+            </Frame>
+
+            <Frame Style="{StaticResource CardFrame}">
+                <HorizontalStackLayout Spacing="10">
+                    <Label Text="⭐" FontSize="20" />
+                    <VerticalStackLayout>
+                        <Label Text="Cảm ơn bạn đã đánh giá" FontAttributes="Bold" FontSize="13" />
+                        <Label Text="Đánh giá 4 sao cho Trà Sữa Mộng Mơ đã được ghi nhận" FontSize="11.5" TextColor="{StaticResource TextGrey}" />
+                        <Label Text="Hôm qua" FontSize="10.5" TextColor="{StaticResource TextGrey}" />
+                    </VerticalStackLayout>
+                </HorizontalStackLayout>
+            </Frame>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

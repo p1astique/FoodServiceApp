@@ -1,0 +1,57 @@
+@model Cart
+@{
+    ViewData["Title"] = "Giỏ hàng";
+    Layout = "_CustomerLayout";
+}
+
+<div class="topbar">
+    <h2>🛒 Giỏ hàng</h2>
+</div>
+
+@if (!Model.Items.Any())
+{
+    <div class="card">
+        <div class="empty-state">
+            <div style="font-size:46px; margin-bottom:8px;">🛒</div>
+            Giỏ hàng của bạn đang trống.
+        </div>
+        <div style="text-align:center;"><a asp-controller="CustomerHome" asp-action="Index" class="btn btn-primary">Khám phá gian hàng</a></div>
+    </div>
+}
+else
+{
+    <div class="cart-shop-block">
+        <div class="cart-shop-header">🏬 @Model.TenGianHang</div>
+        @foreach (var item in Model.Items)
+        {
+            <div class="cart-row">
+                <div class="cart-thumb">🍲</div>
+                <div class="cart-name">@item.TenMon</div>
+                <div class="cart-unit-price">@item.Gia.ToString("N0")đ</div>
+                <form asp-action="CapNhat" method="post" style="display:flex;">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="maMonAn" value="@item.MaMonAn" />
+                    <div class="qty-stepper">
+                        <input type="number" name="soLuong" value="@item.SoLuong" min="1" max="50" onchange="this.form.submit()" />
+                    </div>
+                </form>
+                <div class="cart-subtotal">@((item.Gia * item.SoLuong).ToString("N0"))đ</div>
+                <form asp-action="XoaMon" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="maMonAn" value="@item.MaMonAn" />
+                    <button type="submit" class="btn btn-outline-danger btn-sm" title="Xoá món">✕</button>
+                </form>
+            </div>
+        }
+    </div>
+
+    <div class="cart-summary-bar">
+        <form asp-action="XoaTatCa" method="post" style="margin-right:auto;">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-outline" onclick="return confirm('Xoá toàn bộ giỏ hàng?')">Xoá giỏ hàng</button>
+        </form>
+        <span class="total-label">Tổng cộng (@Model.TongSoMon món):</span>
+        <span class="total-amount">@Model.TongTien.ToString("N0")đ</span>
+        <a asp-action="Checkout" class="btn btn-primary">Mua hàng →</a>
+    </div>
+}

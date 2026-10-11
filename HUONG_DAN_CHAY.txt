@@ -1,0 +1,20 @@
+FOODSERVICEAPP - BẢN GỘP HOÀN CHỈNH (ASP.NET Core 8 + SQL Server)
+
+GỘP TỪ: KhachHang_NangCap (tìm kiếm nâng cao/phân trang, giỏ hàng an toàn, kiểm tra checkout, tự làm mới 15s)
+        + TichHop (tài xế: đơn "Gần bạn", thu nhập 7/30 ngày) + sửa lỗi trùng Logout, hiển thị "x@SoLuong".
+
+1. CƠ SỞ DỮ LIỆU (chọn 1):
+   - Tạo mới: mở SQL/01_MotFileDuyNhat_TaoMoi.sql trong SSMS -> Execute (đã gồm BoSungSchema, 16 bảng, dữ liệu mẫu).
+   - Đã có DB cũ: chạy SQL/02_NangCap_CSDL_DBCu.sql (chạy nhiều lần được).
+2. KẾT NỐI: sửa ConnectionStrings:DefaultConnection trong FoodServiceApp.Web/appsettings.json
+   (hoặc biến môi trường FOOD_DB_CONNECTION). Tên DB: QuanLyDichVuAnUong.
+3. CHẠY: cd FoodServiceApp.Web ; dotnet run
+4. Điền khóa GoongMaps / VnPay / Jwt trong appsettings.json nếu dùng bản đồ, thanh toán, API.
+
+5. MOBILE (Mobile_MAUI): ứng dụng .NET MAUI (khách hàng, gian hàng, quản trị) chạy bằng dữ liệu MOCK,
+   chưa nối API. Mọi chức năng của nó đã có trong bản Web; riêng Ví tiền và Tin nhắn chỉ có ở mobile
+   (không có bảng trong CSDL nên chưa đưa vào Web). Xem Mobile_MAUI/README.md để dựng project.
+
+6. BỔ SUNG MỚI: (a) Tài xế bấm "Từ chối" đơn chờ nhận -> đơn ẩn riêng với tài xế đó (bảng TaiXeTuChoiDon);
+   (b) Gian hàng tạo khuyến mãi cho TỪNG MÓN (cột KhuyenMai.MaMonAn, để trống = giảm cả đơn).
+   Cả hai đã có trong 2 file SQL; DB cũ chỉ cần chạy 02_NangCap_CSDL_DBCu.sql.

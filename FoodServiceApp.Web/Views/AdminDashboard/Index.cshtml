@@ -1,0 +1,81 @@
+@{
+    ViewData["Title"] = "Trang chủ Quản trị";
+    Layout = "_AdminLayout";
+    var topGianHang = (IEnumerable<dynamic>)ViewBag.TopGianHang;
+}
+
+<div class="topbar">
+    <h2>Tổng quan hệ thống</h2>
+</div>
+
+<div class="grid-4 mb-3">
+    <div class="stat-card">
+        <div class="label">Tổng khách hàng</div>
+        <div class="value">@ViewBag.TongKhachHang</div>
+    </div>
+    <div class="stat-card" style="background:#1E1E1E;">
+        <div class="label">Tổng gian hàng</div>
+        <div class="value">@ViewBag.TongGianHang <span style="font-size:13px; font-weight:400;">(@ViewBag.GianHangDangMo đang mở)</span></div>
+    </div>
+    <div class="stat-card" style="background: var(--accent);">
+        <div class="label">Đơn hàng hôm nay</div>
+        <div class="value">@ViewBag.TongDonHomNay</div>
+    </div>
+    <div class="stat-card" style="background: var(--success);">
+        <div class="label">Doanh thu hôm nay</div>
+        <div class="value">@(((decimal)ViewBag.DoanhThuHomNay).ToString("N0"))đ</div>
+    </div>
+</div>
+
+<div class="grid-3 mb-3">
+    <a asp-controller="AdminKhachHang" asp-action="Index" class="quick-nav-card" style="text-decoration:none;">
+        <div class="emoji">👤</div><div class="title">Khách hàng</div>
+        <div class="sub">Xem & khoá tài khoản</div>
+    </a>
+    <a asp-controller="AdminGianHang" asp-action="Index" class="quick-nav-card" style="text-decoration:none;">
+        <div class="emoji">🏬</div><div class="title">Gian hàng</div>
+        <div class="sub">Giám sát đối tác</div>
+    </a>
+    <a asp-controller="AdminGianHang" asp-action="ChoDuyet" class="quick-nav-card" style="text-decoration:none;">
+        <div class="emoji">📝</div><div class="title">Chờ duyệt gian hàng</div>
+        <div class="sub" style="@(((int)ViewBag.SoChoDuyet) > 0 ? "color:var(--accent); font-weight:600;" : "")">
+            @ViewBag.SoChoDuyet hồ sơ mới
+        </div>
+    </a>
+    <a asp-controller="AdminKhuyenMai" asp-action="Index" class="quick-nav-card" style="text-decoration:none;">
+        <div class="emoji">🏷️</div><div class="title">Khuyến mãi</div>
+        <div class="sub">Toàn hệ thống</div>
+    </a>
+    <a asp-controller="AdminThongKe" asp-action="Index" class="quick-nav-card" style="text-decoration:none;">
+        <div class="emoji">📊</div><div class="title">Thống kê</div>
+        <div class="sub">Báo cáo chi tiết</div>
+    </a>
+    <a asp-controller="AdminSuCo" asp-action="Index" class="quick-nav-card" style="text-decoration:none;">
+        <div class="emoji">🛠️</div><div class="title">Xử lý sự cố</div>
+        <div class="sub" style="@(((int)ViewBag.SoSuCo) > 0 ? "color:var(--danger); font-weight:600;" : "")">
+            @ViewBag.SoSuCo đơn cần xử lý
+        </div>
+    </a>
+</div>
+
+<div class="card">
+    <h3 style="margin-top:0;">Top gian hàng theo doanh thu</h3>
+    @if (!topGianHang.Any())
+    {
+        <div class="empty-state">Chưa có dữ liệu doanh thu.</div>
+    }
+    else
+    {
+        <table class="data-table">
+            <thead><tr><th>#</th><th>Gian hàng</th><th>Doanh thu</th></tr></thead>
+            <tbody>
+                @{ int i = 1; }
+                @foreach (var g in topGianHang)
+                {
+                    <tr><td>@i</td><td>@g.TenGianHang</td><td>@(((decimal)g.DoanhThu).ToString("N0"))đ</td></tr>
+                    i++;
+                }
+            </tbody>
+        </table>
+    }
+</div>

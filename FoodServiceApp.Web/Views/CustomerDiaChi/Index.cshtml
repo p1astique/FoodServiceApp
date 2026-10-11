@@ -1,0 +1,66 @@
+@model DiaChiFormViewModel
+@{
+    ViewData["Title"] = "Sổ địa chỉ";
+    Layout = "_CustomerLayout";
+    var danhSach = (List<DiaChiKhachHang>)ViewBag.DanhSach;
+}
+
+<div class="topbar">
+    <h2>📍 Sổ địa chỉ giao hàng</h2>
+</div>
+
+<div class="grid-2">
+    <div class="card">
+        <h3 style="margin-top:0;">Địa chỉ đã lưu</h3>
+        @if (!danhSach.Any())
+        {
+            <div class="empty-state">Bạn chưa lưu địa chỉ nào. Thêm địa chỉ để chọn nhanh khi đặt hàng.</div>
+        }
+        else
+        {
+            @foreach (var dc in danhSach)
+            {
+                <div class="address-row">
+                    <div style="flex:1;">
+                        <strong>@dc.Nhan</strong>
+                        @if (dc.MacDinh) { <span class="badge badge-primary" style="margin-left:6px;">Mặc định</span> }
+                        <div class="text-muted" style="font-size:13px;">@dc.DiaChi</div>
+                    </div>
+                    <div style="display:flex; gap:6px;">
+                        @if (!dc.MacDinh)
+                        {
+                            <form asp-action="DatMacDinh" asp-route-id="@dc.MaDiaChi" method="post">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-outline btn-sm">Đặt mặc định</button>
+                            </form>
+                        }
+                        <form asp-action="Xoa" asp-route-id="@dc.MaDiaChi" method="post">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Xóa địa chỉ này?')">Xóa</button>
+                        </form>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+
+    <div class="card">
+        <h3 style="margin-top:0;">Thêm địa chỉ mới</h3>
+        <form asp-action="Them" method="post">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+            <div class="form-group">
+                <label asp-for="Nhan">Nhãn</label>
+                <input asp-for="Nhan" class="form-control" placeholder="Nhà, Cơ quan..." />
+                <span asp-validation-for="Nhan" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DiaChi">Địa chỉ</label>
+                <textarea asp-for="DiaChi" class="form-control" placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành"></textarea>
+                <span asp-validation-for="DiaChi" class="text-danger"></span>
+            </div>
+            <label style="display:block; margin-bottom:12px;"><input type="checkbox" asp-for="MacDinh" /> Đặt làm địa chỉ mặc định</label>
+            <button type="submit" class="btn btn-primary">Lưu địa chỉ</button>
+        </form>
+    </div>
+</div>

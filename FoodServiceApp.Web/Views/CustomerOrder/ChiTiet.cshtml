@@ -1,0 +1,125 @@
+@model DonHang
+@{
+    ViewData["Title"] = $"Đơn #{Model.MaDonHang}";
+    Layout = "_CustomerLayout";
+}
+
+<div class="topbar">
+    <h2>Đơn hàng #@Model.MaDonHang</h2>
+</div>
+
+@{
+    var cacBuoc = new[] { ("ChoXacNhan", "Chờ xác nhận"), ("DaXacNhan", "Đã xác nhận"), ("DangGiao", "Đang giao"), ("DaGiao", "Hoàn thành") };
+    var viTri = Array.FindIndex(cacBuoc, b => b.Item1 == Model.TrangThai);
+    var taiXe = Model.GiaoHang?.TaiXe;
+}
+
+@if (Model.TrangThai == "DaHuy")
+{
+    <div class="alert-danger mb-3">Đơn hàng này đã bị hủy.</div>
+}
+else
+{
+    <div class="card mb-3">
+        <ol class="order-steps">
+            @for (var i = 0; i < cacBuoc.Length; i++)
+            {
+                <li class="@(i < viTri ? "done" : i == viTri ? "current" : "")">
+                    <span class="dot">@(i < viTri ? "✓" : (i + 1).ToString())</span>
+                    <span class="lbl">@cacBuoc[i].Item2</span>
+                </li>
+            }
+        </ol>
+        @if (Model.TrangThai == "ChoXacNhan")
+        {
+            <p class="text-muted" style="text-align:center; margin:10px 0 0;">Đang chờ gian hàng xác nhận đơn.</p>
+        }
+        else if (Model.TrangThai == "DaXacNhan")
+        {
+            <p class="text-muted" style="text-align:center; margin:10px 0 0;">Gian hàng đang chuẩn bị món, đang chờ tài xế nhận đơn.</p>
+        }
+        else if (Model.TrangThai == "DangGiao")
+        {
+            <p class="text-muted" style="text-align:center; margin:10px 0 0;">
+                @(Model.GiaoHang?.TrangThai == "DaNhan" ? "Tài xế đang đến gian hàng lấy món." : "Tài xế đang giao món đến bạn.")
+            </p>
+        }
+    </div>
+}
+
+@if (taiXe != null)
+{
+    <div class="card mb-3 driver-box">
+        <div class="driver-avatar">🛵</div>
+        <div style="flex:1;">
+            <div><strong>@taiXe.HoTen</strong></div>
+            <div class="text-muted" style="font-size:13px;">
+                @(string.IsNullOrWhiteSpace(taiXe.PhuongTien) ? "Xe máy" : taiXe.PhuongTien)
+                @if (!string.IsNullOrWhiteSpace(taiXe.BienSo)) { <text> · Biển số @taiXe.BienSo</text> }
+            </div>
+        </div>
+        <a href="tel:@taiXe.SDT" class="btn btn-outline">📞 @taiXe.SDT</a>
+    </div>
+}
+
+<div class="grid-2">
+    <div class="card">
+        <h3 style="margin-top:0;">@Model.GianHang?.TenCuaHang</h3>
+        <table class="data-table">
+            <thead><tr><th>Món</th><th>SL</th><th>Thành tiền</th></tr></thead>
+            <tbody>
+                @foreach (var ct in Model.ChiTiets)
+                {
+                    <tr><td>@ct.MonAn?.TenMon</td><td>@ct.SoLuong</td><td>@ct.ThanhTien.ToString("N0")đ</td></tr>
+                }
+            </tbody>
+        </table>
+        @if (Model.PhiGiaoHang > 0)
+        {
+            <div style="text-align:right; margin-top:12px; font-size:13.5px;">Phí giao hàng: @Model.PhiGiaoHang.ToString("N0")đ</div>
+        }
+        <div style="text-align:right; margin-top:6px; font-weight:700; font-size:16px;">
+            Tổng cộng: @Model.TongTien.ToString("N0")đ
+        </div>
+    </div>
+
+    <div class="card">
+        <h3 style="margin-top:0;">Trạng thái</h3>
+        <p>@await Html.PartialAsync("~/Views/Dashboard/_BadgeTrangThaiDonHang.cshtml", Model.TrangThai)</p>
+        <p><strong>Ngày đặt:</strong> @Model.NgayDat.ToString("HH:mm dd/MM/yyyy")</p>
+        <p><strong>Giao đến:</strong> @Model.DiaChiGiaoHang</p>
+        @if (!string.IsNullOrEmpty(Model.GhiChu))
+        {
+            <p><strong>Ghi chú:</strong> @Model.GhiChu</p>
+        }
+        @if (Model.ThanhToan != null)
+        {
+            <p><strong>Thanh toán:</strong> @Model.ThanhToan.HinhThuc — @Model.ThanhToan.TrangThai</p>
+        }
+
+        @if (Model.TrangThai == "ChoXacNhan")
+        {
+            <form asp-action="HuyDon" asp-route-id="@Model.MaDonHang" method="post" class="mt-3">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-danger" onclick="return confirm('Huỷ đơn hàng này?')">Huỷ đơn</button>
+            </form>
+        }
+
+        @if (Model.TrangThai == "DaGiao")
+        {
+            <a asp-action="DanhGia" asp-route-id="@Model.MaDonHang" class="btn btn-accent mt-3">Đánh giá đơn hàng</a>
+        }
+
+        <div class="mt-3">
+            <a asp-controller="CustomerPhanHoi" asp-action="Index" asp-route-donHang="@Model.MaDonHang" style="font-size:13px;">💬 Gửi phản hồi / khiếu nại về đơn này</a>
+        </div>
+    </div>
+</div>
+
+@if (Model.TrangThai != "DaGiao" && Model.TrangThai != "DaHuy")
+{
+    <div class="text-muted" style="text-align:center; font-size:11.5px; margin-top:12px;">Trang sẽ tự cập nhật trạng thái đơn mỗi 15 giây.</div>
+    <script>
+        window.setTimeout(function () { window.location.reload(); }, 15000);
+    </script>
+}

@@ -1,0 +1,57 @@
+@model List<KhuyenMai>
+@{
+    ViewData["Title"] = "Khuyến mãi toàn hệ thống";
+    Layout = "_AdminLayout";
+}
+
+<div class="topbar">
+    <h2>Khuyến mãi toàn hệ thống</h2>
+    <a asp-action="Create" class="btn btn-accent">+ Tạo mã mới</a>
+</div>
+
+<div class="card mb-3" style="background:#F0F0F0; font-size:13px;">
+    Danh sách này chỉ gồm mã khuyến mãi áp dụng <strong>toàn hệ thống</strong> (mọi gian hàng).
+    Mã khuyến mãi riêng của từng gian hàng do chính gian hàng đó tự quản lý.
+</div>
+
+@if (!Model.Any())
+{
+    <div class="card"><div class="empty-state">Chưa có mã khuyến mãi toàn hệ thống nào.</div></div>
+}
+else
+{
+    <div class="card">
+        <table class="data-table">
+            <thead>
+                <tr><th>Mã</th><th>Mức giảm</th><th>Điều kiện</th><th>Thời gian</th><th>Trạng thái</th><th></th></tr>
+            </thead>
+            <tbody>
+                @foreach (var km in Model)
+                {
+                    var hetHan = DateTime.Now > km.NgayKetThuc;
+                    <tr>
+                        <td><strong>@km.MaCode</strong><div class="text-muted" style="font-size:12px;">@km.MoTa</div></td>
+                        <td>
+                            @if (km.PhanTramGiam != null) { @($"Giảm {km.PhanTramGiam:0.#}%") }
+                            else { @($"Giảm {km.SoTienGiam:N0}đ") }
+                        </td>
+                        <td>@(km.DieuKienApDung ?? "—")</td>
+                        <td style="font-size:12.5px;">@km.NgayBatDau.ToString("dd/MM/yy") – @km.NgayKetThuc.ToString("dd/MM/yy")</td>
+                        <td>
+                            @if (!km.TrangThai) { <span class="badge badge-grey">Đã tắt</span> }
+                            else if (hetHan) { <span class="badge badge-danger">Hết hạn</span> }
+                            else { <span class="badge badge-success">Đang chạy</span> }
+                        </td>
+                        <td style="white-space:nowrap;">
+                            <a asp-action="Edit" asp-route-id="@km.MaKhuyenMai" class="btn btn-outline btn-sm">Sửa</a>
+                            <form asp-action="ToggleTrangThai" asp-route-id="@km.MaKhuyenMai" method="post" style="display:inline;">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-outline btn-sm">@(km.TrangThai ? "Tắt" : "Bật")</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

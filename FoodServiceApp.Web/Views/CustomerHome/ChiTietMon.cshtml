@@ -1,0 +1,84 @@
+@model MonChiTietViewModel
+@{
+    ViewData["Title"] = Model.Mon.TenMon;
+    Layout = "_CustomerLayout";
+}
+
+<div class="topbar">
+    <h2>@Model.Mon.TenMon</h2>
+    <a asp-action="ChiTiet" asp-route-id="@Model.GianHang.MaGianHang" class="btn btn-outline">← Về gian hàng</a>
+</div>
+
+<div class="grid-2">
+    <div class="card dish-hero">
+        @if (!string.IsNullOrEmpty(Model.Mon.HinhAnh))
+        {
+            <img src="@Model.Mon.HinhAnh" alt="@Model.Mon.TenMon" />
+        }
+        else
+        {
+            <div class="dish-hero-empty">🍲</div>
+        }
+    </div>
+
+    <div class="card">
+        <h3 style="margin-top:0;">@Model.Mon.TenMon</h3>
+        <div class="dish-price">@Model.Mon.Gia.ToString("N0")đ</div>
+        <p class="meta">
+            Gian hàng:
+            <a asp-action="ChiTiet" asp-route-id="@Model.GianHang.MaGianHang"><strong>@Model.GianHang.TenCuaHang</strong></a>
+            &nbsp;·&nbsp; 📍 @Model.GianHang.DiaChi
+        </p>
+        <div class="rating-line">
+            @if (Model.SoDanhGia > 0)
+            {
+                <span>⭐ @Model.DiemTrungBinh.ToString("0.0") (@Model.SoDanhGia đánh giá)</span>
+            }
+            else
+            {
+                <span class="text-muted">Món này chưa có đánh giá</span>
+            }
+        </div>
+
+        <p style="margin-top:12px;">
+            @(string.IsNullOrWhiteSpace(Model.Mon.MoTa) ? "Gian hàng chưa cập nhật mô tả cho món này." : Model.Mon.MoTa)
+        </p>
+
+        @if (Model.Mon.TinhTrang == "ConHang")
+        {
+            <form asp-action="ThemVaoGio" asp-route-maGianHang="@Model.GianHang.MaGianHang" method="post" style="display:flex; gap:10px; align-items:center; margin-top:14px;">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="maMonAn" value="@Model.Mon.MaMonAn" />
+                <input type="hidden" name="veTrangMon" value="true" />
+                <label style="margin:0;">Số lượng</label>
+                <input type="number" name="soLuong" value="1" min="1" max="20" class="form-control" style="width:90px;" />
+                <button type="submit" class="btn btn-primary">🛒 Thêm vào giỏ hàng</button>
+            </form>
+        }
+        else
+        {
+            <span class="badge badge-grey" style="margin-top:14px;">Hết hàng</span>
+        }
+    </div>
+</div>
+
+<div class="card" style="margin-top:16px;">
+    <h3 style="margin-top:0;">Đánh giá về món</h3>
+    @if (!Model.DanhGias.Any())
+    {
+        <div class="empty-state">Chưa có đánh giá nào. Hãy đặt món và là người đầu tiên đánh giá!</div>
+    }
+    else
+    {
+        @foreach (var dg in Model.DanhGias)
+        {
+            <div class="review-row">
+                <div><strong>@dg.TenKhach</strong> &nbsp; @(new string('⭐', dg.SoSao)) <span class="text-muted" style="font-size:12px;">· @dg.Ngay.ToString("dd/MM/yyyy")</span></div>
+                @if (!string.IsNullOrWhiteSpace(dg.NoiDung))
+                {
+                    <div style="font-size:13.5px; margin-top:2px;">@dg.NoiDung</div>
+                }
+            </div>
+        }
+    }
+</div>

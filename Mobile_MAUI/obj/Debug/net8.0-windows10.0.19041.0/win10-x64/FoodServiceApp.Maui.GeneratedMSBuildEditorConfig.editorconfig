@@ -1,0 +1,237 @@
+is_global = true
+build_property.TargetFramework = net8.0-windows10.0.19041.0
+build_property.TargetPlatformMinVersion = 
+			10.0.17763.0
+build_property.UsingMicrosoftNETSdkWeb = 
+build_property.ProjectTypeGuids = 9A19103F-16F7-4668-BE54-9A1E7A4F7556
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = FoodServiceApp.Maui
+build_property.ProjectDir = D:\FoodServiceApp_HoanChinh\Mobile_MAUI\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.CsWinRTAotOptimizerEnabled = true
+build_property.CsWinRTAotExportsEnabled = 
+build_property.CsWinRTRcwFactoryFallbackGeneratorForceOptIn = 
+build_property.CsWinRTRcwFactoryFallbackGeneratorForceOptOut = 
+build_property.CsWinRTCcwLookupTableGeneratorEnabled = true
+build_property.CsWinRTMergeReferencedActivationFactories = 
+build_property.CsWinRTAotWarningLevel = 
+
+[D:/FoodServiceApp_HoanChinh/Mobile_MAUI/App.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = FoodServiceApp.Maui.App.xaml
+build_metadata.AdditionalFiles.TargetPath = App.xaml
+build_metadata.AdditionalFiles.RelativePath = App.xaml
+
+[D:/FoodServiceApp_HoanChinh/Mobile_MAUI/AppShell.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = FoodServiceApp.Maui.AppShell.xaml
+build_metadata.AdditionalFiles.TargetPath = AppShell.xaml
+build_metadata.AdditionalFiles.RelativePath = AppShell.xaml
+
+[D:/FoodServiceApp_HoanChinh/Mobile_MAUI/Resources/Styles/Colors.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = FoodServiceApp.Maui.Resources.Styles.Colors.xaml
+build_metadata.AdditionalFiles.TargetPath = Resources\Styles\Colors.xaml
+build_metadata.AdditionalFiles.RelativePath = Resources\Styles\Colors.xaml
+
+[D:/FoodServiceApp_HoanChinh/Mobile_MAUI/Resources/Styles/Styles.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = FoodServiceApp.Maui.Resources.Styles.Styles.xaml
+build_metadata.AdditionalFiles.TargetPath = Resources\Styles\Styles.xaml
+build_metadata.AdditionalFiles.RelativePath = Resources\Styles\Styles.xaml
+
+[D:/FoodServiceApp_HoanChinh/Mobile_MAUI/Views/ActivityPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = FoodServiceApp.Maui.Views.ActivityPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\ActivityPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\ActivityPage.xaml
+
+[D:/FoodServiceApp_HoanChinh/Mobile_MAUI/Views/AdminCustomerListPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = FoodServiceApp.Maui.Views.AdminCustomerListPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\AdminCustomerListPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\AdminCustomerListPage.xaml
+
+[D:/FoodServiceApp_HoanChinh/Mobile_MAUI/Views/AdminHomePage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = FoodServiceApp.Maui.Views.AdminHomePage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\AdminHomePage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\AdminHomePage.xaml
+
+[D:/FoodServiceApp_HoanChinh/Mobile_MAUI/Views/AdminIssuesPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = FoodServiceApp.Maui.Views.AdminIssuesPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\AdminIssuesPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\AdminIssuesPage.xaml
+
+[D:/FoodServiceApp_HoanChinh/Mobile_MAUI/Views/AdminLoginPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = FoodServiceApp.Maui.Views.AdminLoginPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\AdminLoginPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\AdminLoginPage.xaml
+
+[D:/FoodServiceApp_HoanChinh/Mobile_MAUI/Views/AdminPromotionEditPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = FoodServiceApp.Maui.Views.AdminPromotionEditPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\AdminPromotionEditPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\AdminPromotionEditPage.xaml
+
+[D:/FoodServiceApp_HoanChinh/Mobile_MAUI/Views/AdminPromotionsPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = FoodServiceApp.Maui.Views.AdminPromotionsPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\AdminPromotionsPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\AdminPromotionsPage.xaml
+
+[D:/FoodServiceApp_HoanChinh/Mobile_MAUI/Views/AdminStatisticsPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = FoodServiceApp.Maui.Views.AdminStatisticsPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\AdminStatisticsPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\AdminStatisticsPage.xaml
+
+[D:/FoodServiceApp_HoanChinh/Mobile_MAUI/Views/AdminVendorApprovalPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = FoodServiceApp.Maui.Views.AdminVendorApprovalPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\AdminVendorApprovalPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\AdminVendorApprovalPage.xaml
+
+[D:/FoodServiceApp_HoanChinh/Mobile_MAUI/Views/AdminVendorListPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = FoodServiceApp.Maui.Views.AdminVendorListPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\AdminVendorListPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\AdminVendorListPage.xaml
+
+[D:/FoodServiceApp_HoanChinh/Mobile_MAUI/Views/DriverDeliveryDetailPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = FoodServiceApp.Maui.Views.DriverDeliveryDetailPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\DriverDeliveryDetailPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\DriverDeliveryDetailPage.xaml
+
+[D:/FoodServiceApp_HoanChinh/Mobile_MAUI/Views/DriverHomePage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = FoodServiceApp.Maui.Views.DriverHomePage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\DriverHomePage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\DriverHomePage.xaml
+
+[D:/FoodServiceApp_HoanChinh/Mobile_MAUI/Views/DriverLoginPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = FoodServiceApp.Maui.Views.DriverLoginPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\DriverLoginPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\DriverLoginPage.xaml
+
+[D:/FoodServiceApp_HoanChinh/Mobile_MAUI/Views/LoginPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = FoodServiceApp.Maui.Views.LoginPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\LoginPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\LoginPage.xaml
+
+[D:/FoodServiceApp_HoanChinh/Mobile_MAUI/Views/MenuCartPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = FoodServiceApp.Maui.Views.MenuCartPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\MenuCartPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\MenuCartPage.xaml
+
+[D:/FoodServiceApp_HoanChinh/Mobile_MAUI/Views/MessagesPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = FoodServiceApp.Maui.Views.MessagesPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\MessagesPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\MessagesPage.xaml
+
+[D:/FoodServiceApp_HoanChinh/Mobile_MAUI/Views/OrderTrackingPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = FoodServiceApp.Maui.Views.OrderTrackingPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\OrderTrackingPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\OrderTrackingPage.xaml
+
+[D:/FoodServiceApp_HoanChinh/Mobile_MAUI/Views/PaymentPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = FoodServiceApp.Maui.Views.PaymentPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\PaymentPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\PaymentPage.xaml
+
+[D:/FoodServiceApp_HoanChinh/Mobile_MAUI/Views/ProfilePage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = FoodServiceApp.Maui.Views.ProfilePage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\ProfilePage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\ProfilePage.xaml
+
+[D:/FoodServiceApp_HoanChinh/Mobile_MAUI/Views/ReviewPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = FoodServiceApp.Maui.Views.ReviewPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\ReviewPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\ReviewPage.xaml
+
+[D:/FoodServiceApp_HoanChinh/Mobile_MAUI/Views/TrangChuPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = FoodServiceApp.Maui.Views.TrangChuPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\TrangChuPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\TrangChuPage.xaml
+
+[D:/FoodServiceApp_HoanChinh/Mobile_MAUI/Views/VendorHomePage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = FoodServiceApp.Maui.Views.VendorHomePage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\VendorHomePage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\VendorHomePage.xaml
+
+[D:/FoodServiceApp_HoanChinh/Mobile_MAUI/Views/VendorLoginPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = FoodServiceApp.Maui.Views.VendorLoginPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\VendorLoginPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\VendorLoginPage.xaml
+
+[D:/FoodServiceApp_HoanChinh/Mobile_MAUI/Views/VendorMenuItemEditPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = FoodServiceApp.Maui.Views.VendorMenuItemEditPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\VendorMenuItemEditPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\VendorMenuItemEditPage.xaml
+
+[D:/FoodServiceApp_HoanChinh/Mobile_MAUI/Views/VendorMenuPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = FoodServiceApp.Maui.Views.VendorMenuPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\VendorMenuPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\VendorMenuPage.xaml
+
+[D:/FoodServiceApp_HoanChinh/Mobile_MAUI/Views/VendorOrdersPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = FoodServiceApp.Maui.Views.VendorOrdersPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\VendorOrdersPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\VendorOrdersPage.xaml
+
+[D:/FoodServiceApp_HoanChinh/Mobile_MAUI/Views/VendorProfilePage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = FoodServiceApp.Maui.Views.VendorProfilePage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\VendorProfilePage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\VendorProfilePage.xaml
+
+[D:/FoodServiceApp_HoanChinh/Mobile_MAUI/Views/VendorPromotionEditPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = FoodServiceApp.Maui.Views.VendorPromotionEditPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\VendorPromotionEditPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\VendorPromotionEditPage.xaml
+
+[D:/FoodServiceApp_HoanChinh/Mobile_MAUI/Views/VendorPromotionsPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = FoodServiceApp.Maui.Views.VendorPromotionsPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\VendorPromotionsPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\VendorPromotionsPage.xaml
+
+[D:/FoodServiceApp_HoanChinh/Mobile_MAUI/Views/VendorRegisterPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = FoodServiceApp.Maui.Views.VendorRegisterPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\VendorRegisterPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\VendorRegisterPage.xaml
+
+[D:/FoodServiceApp_HoanChinh/Mobile_MAUI/Views/VendorRevenuePage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = FoodServiceApp.Maui.Views.VendorRevenuePage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\VendorRevenuePage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\VendorRevenuePage.xaml
+
+[D:/FoodServiceApp_HoanChinh/Mobile_MAUI/Views/WalletPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = FoodServiceApp.Maui.Views.WalletPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\WalletPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\WalletPage.xaml

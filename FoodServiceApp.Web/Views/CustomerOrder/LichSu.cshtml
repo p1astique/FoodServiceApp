@@ -1,0 +1,53 @@
+@model List<DonHang>
+@{
+    ViewData["Title"] = "Lịch sử mua hàng";
+    Layout = "_CustomerLayout";
+    var maDonDaDanhGia = (List<int>)ViewBag.MaDonDaDanhGia;
+}
+
+<div class="topbar">
+    <h2>📦 Đơn mua</h2>
+</div>
+
+<div class="order-tabs">
+    <a asp-action="Index">Đang xử lý</a>
+    <a asp-action="LichSu" class="active">Lịch sử</a>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="card"><div class="empty-state">Bạn chưa có đơn hàng nào hoàn tất.</div></div>
+}
+else
+{
+    <div class="card">
+        <table class="data-table">
+            <thead><tr><th>Mã đơn</th><th>Gian hàng</th><th>Ngày đặt</th><th>Tổng tiền</th><th>Trạng thái</th><th></th></tr></thead>
+            <tbody>
+                @foreach (var don in Model)
+                {
+                    <tr>
+                        <td><a asp-action="ChiTiet" asp-route-id="@don.MaDonHang">#@don.MaDonHang</a></td>
+                        <td>@don.GianHang?.TenCuaHang</td>
+                        <td>@don.NgayDat.ToString("dd/MM/yyyy")</td>
+                        <td>@don.TongTien.ToString("N0")đ</td>
+                        <td>@await Html.PartialAsync("~/Views/Dashboard/_BadgeTrangThaiDonHang.cshtml", don.TrangThai)</td>
+                        <td>
+                            @if (don.TrangThai == "DaGiao")
+                            {
+                                if (maDonDaDanhGia.Contains(don.MaDonHang))
+                                {
+                                    <span class="text-muted" style="font-size:12px;">Đã đánh giá</span>
+                                }
+                                else
+                                {
+                                    <a asp-action="DanhGia" asp-route-id="@don.MaDonHang" class="btn btn-accent btn-sm">Đánh giá</a>
+                                }
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

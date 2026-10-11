@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:FoodServiceApp.Maui.Models"
+             x:Class="FoodServiceApp.Maui.Views.DriverDeliveryDetailPage"
+             Title="Chi tiết giao hàng">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="14">
+
+            <Frame BackgroundColor="{StaticResource Primary}" CornerRadius="16" HasShadow="False">
+                <VerticalStackLayout Spacing="6">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Grid.Column="0" x:Name="LblMaDon" TextColor="White" FontAttributes="Bold" FontSize="15" />
+                        <Label Grid.Column="1" x:Name="LblPhiGiao" TextColor="White" FontAttributes="Bold" FontSize="15" />
+                    </Grid>
+                    <Label x:Name="LblTrangThaiHienTai" TextColor="#DDFFFFFF" FontSize="12.5" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <Frame Style="{StaticResource CardFrame}">
+                <VerticalStackLayout Spacing="10">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                        <Label Grid.Column="0" Text="🏪" FontSize="18" />
+                        <VerticalStackLayout Grid.Column="1">
+                            <Label Text="Điểm lấy hàng" FontSize="11" TextColor="{StaticResource TextGrey}" />
+                            <Label x:Name="LblGianHang" FontAttributes="Bold" FontSize="14" />
+                            <Label x:Name="LblDiaChiLay" FontSize="12.5" TextColor="{StaticResource TextGrey}" />
+                        </VerticalStackLayout>
+                    </Grid>
+                    <BoxView HeightRequest="1" BackgroundColor="{StaticResource BorderColor}" />
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                        <Label Grid.Column="0" Text="🏁" FontSize="18" />
+                        <VerticalStackLayout Grid.Column="1">
+                            <Label Text="Điểm giao hàng" FontSize="11" TextColor="{StaticResource TextGrey}" />
+                            <Label x:Name="LblDiaChiGiao" FontAttributes="Bold" FontSize="14" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </VerticalStackLayout>
+            </Frame>
+
+            <Label Text="Món trong đơn" FontAttributes="Bold" FontSize="14" />
+            <CollectionView x:Name="DsMon" SelectionMode="None">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:MucGioHang">
+                        <Grid ColumnDefinitions="*,Auto" Padding="0,4">
+                            <Label Grid.Column="0" FontSize="13">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="{Binding SoLuong}" FontAttributes="Bold" />
+                                        <Span Text="x " FontAttributes="Bold" />
+                                        <Span Text="{Binding MonAn.TenMon}" />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                            <Label Grid.Column="1" Text="{Binding ThanhTien, StringFormat='{0:N0}đ'}" FontSize="13" />
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <Button x:Name="BtnHanhDongChinh" Style="{StaticResource AccentButton}" Margin="0,10,0,0" Clicked="OnHanhDongChinhClicked" />
+            <Button Text="Gọi khách hàng" Style="{StaticResource OutlineButton}" Clicked="OnGoiKhachClicked" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
