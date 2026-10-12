@@ -42,8 +42,8 @@
                         <Grid ColumnDefinitions="80,*" Padding="0">
                             <Frame Grid.Column="0" BackgroundColor="#1B5E3C22" CornerRadius="0"
                                    Padding="0" HasShadow="False">
-                                <Label Text="{Binding HinhAnh}" FontSize="34"
-                                       HorizontalOptions="Center" VerticalOptions="Center" />
+                                <Image
+                                       HorizontalOptions="Center" VerticalOptions="Center"  Source="{Binding ImageUrl}" HeightRequest="48" WidthRequest="48" Aspect="AspectFill" />
                             </Frame>
                             <VerticalStackLayout Grid.Column="1" Padding="12,10" Spacing="4">
                                 <Label Text="{Binding TenGianHang}" FontAttributes="Bold" FontSize="15" />

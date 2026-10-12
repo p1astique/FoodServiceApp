@@ -10,11 +10,11 @@
             <Frame WidthRequest="72" HeightRequest="72" CornerRadius="18"
                    BackgroundColor="{StaticResource Primary}"
                    HorizontalOptions="Center" Padding="0">
-                <Label x:Name="LblAnhHienTai" FontSize="34" HorizontalOptions="Center" VerticalOptions="Center" />
+                <Image x:Name="LblAnhHienTai" HeightRequest="48" WidthRequest="48" Aspect="AspectFill" />
             </Frame>
 
-            <Label Text="Biểu tượng cửa hàng (emoji)" FontSize="13" FontAttributes="Bold" />
-            <Entry x:Name="EntryHinhAnh" Placeholder="🍚" MaxLength="4" />
+            <Label Text="Đường dẫn ảnh cửa hàng" FontSize="13" FontAttributes="Bold" />
+            <Entry x:Name="EntryHinhAnh" Placeholder="🍚" MaxLength="255" />
 
             <Label Text="Tên gian hàng *" FontSize="13" FontAttributes="Bold" />
             <Entry x:Name="EntryTenGianHang" />
@@ -25,11 +25,8 @@
             <Label Text="Số điện thoại *" FontSize="13" FontAttributes="Bold" />
             <Entry x:Name="EntrySdt" Keyboard="Telephone" />
 
-            <Label Text="Email" FontSize="13" FontAttributes="Bold" />
+            <Label Text="Tên đăng nhập" FontSize="13" FontAttributes="Bold" />
             <Entry x:Name="EntryEmail" Keyboard="Email" IsEnabled="False" TextColor="{StaticResource TextGrey}" />
-
-            <Label Text="Thời gian giao hàng dự kiến (phút)" FontSize="13" FontAttributes="Bold" />
-            <Entry x:Name="EntryThoiGianGiao" Keyboard="Numeric" />
 
             <Label Text="Mô tả cửa hàng" FontSize="13" FontAttributes="Bold" />
             <Editor x:Name="EditorMoTa" HeightRequest="90" BackgroundColor="White" />

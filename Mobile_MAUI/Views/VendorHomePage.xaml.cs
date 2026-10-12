@@ -1,120 +1,53 @@
 using FoodServiceApp.Maui.Models;
 using FoodServiceApp.Maui.Services;
-
 namespace FoodServiceApp.Maui.Views;
-
 public partial class VendorHomePage : ContentPage
 {
-    public VendorHomePage()
+    private bool _binding;
+    public VendorHomePage() { InitializeComponent(); }
+    protected override async void OnAppearing() { base.OnAppearing(); await Reload(); }
+    private Task Reload() => ApiUi.Run(this, async () => { DsDonMoi.ItemsSource = null; await VendorWorkspace.LoadAsync(); Render(); });
+    private void Render()
     {
-        InitializeComponent();
+        var g = VendorWorkspace.Store;
+        LblAnhGianHang.Source = g.ImageUrl; LblTenGianHang.Text = g.TenGianHang; LblDiaChiGianHang.Text = g.DiaChi;
+        _binding = true; SwitchMoCua.IsToggled = g.DangMoCua; _binding = false;
+        LblTrangThaiMoCua.Text = g.DangMoCua ? "Đang mở bán" : "Đang tạm đóng";
+        var done = VendorWorkspace.Orders.Where(x => x.TrangThai == TrangThaiDonHang.HoanThanh && x.NgayDat.Date == DateTime.Today).ToList();
+        LblDoanhThuHomNay.Text = $"{done.Sum(x => x.TongTien):N0}đ"; LblSoDonHomNay.Text = done.Count.ToString();
+        var waiting = VendorWorkspace.Orders.Where(x => x.TrangThai == TrangThaiDonHang.ChoXacNhan).ToList();
+        LblSoDonChoXacNhan.Text = $"{waiting.Count} đơn chờ xác nhận";
+        LblSoMonAn.Text = $"{VendorWorkspace.Items.Count(x => x.ConHang)} món đang bán";
+        DsDonMoi.ItemsSource = waiting; LblKhongCoDonMoi.IsVisible = waiting.Count == 0;
     }
-
-    protected override void OnAppearing()
+    private async void OnSwitchMoCuaToggled(object? sender, ToggledEventArgs e)
     {
-        base.OnAppearing();
-        NapHoSo();
-        NapThongKeNhanh();
-        NapDonMoi();
+        if (_binding || IsBusy) return;
+        await ApiUi.Run(this, async () => {
+            try {
+                await ApiClient.SendAsync(HttpMethod.Put, "api/vendor/business-status", new { DangMoCua = e.Value });
+                await VendorWorkspace.LoadAsync(); Render();
+            } catch { _binding = true; SwitchMoCua.IsToggled = !e.Value; _binding = false; throw; }
+        });
     }
-
-    private void NapHoSo()
+    private async Task Update(object sender, string status)
     {
-        var gh = MockData.GianHangHienTai;
-        LblAnhGianHang.Text = gh.HinhAnh;
-        LblTenGianHang.Text = gh.TenGianHang;
-        LblDiaChiGianHang.Text = gh.DiaChi;
-
-        SwitchMoCua.Toggled -= OnSwitchMoCuaToggled;
-        SwitchMoCua.IsToggled = gh.DangMoCua;
-        SwitchMoCua.Toggled += OnSwitchMoCuaToggled;
-        LblTrangThaiMoCua.Text = gh.DangMoCua ? "Đang mở bán" : "Đang tạm đóng";
+        if (sender is not Button { CommandParameter: DonHang order }) return;
+        if (status == "DaHuy" && !await DisplayAlert("Hủy đơn", "Hủy đơn này? Khoản đã thanh toán cần quản trị đối soát hoàn tiền.", "Hủy đơn", "Quay lại")) return;
+        await ApiUi.Run(this, async () => { await VendorWorkspace.UpdateOrder(order.Id, status); await VendorWorkspace.LoadAsync(); Render(); });
     }
-
-    private void NapThongKeNhanh()
-    {
-        var donCuaToi = MockData.DonHangCuaGianHang.Where(d => d.GianHangId == MockData.GianHangHienTai.Id);
-
-        var hoanThanhHomNay = donCuaToi.Where(d => d.TrangThai == TrangThaiDonHang.HoanThanh && d.NgayDat.Date == DateTime.Now.Date).ToList();
-        LblDoanhThuHomNay.Text = $"{hoanThanhHomNay.Sum(d => d.TongTien):N0}đ";
-        LblSoDonHomNay.Text = hoanThanhHomNay.Count.ToString();
-
-        var soChoXacNhan = donCuaToi.Count(d => d.TrangThai == TrangThaiDonHang.ChoXacNhan);
-        LblSoDonChoXacNhan.Text = soChoXacNhan > 0 ? $"{soChoXacNhan} đơn chờ xác nhận" : "Không có đơn chờ";
-
-        LblSoMonAn.Text = $"{MockData.MonAnCuaGianHang(MockData.GianHangHienTai.Id).Count} món đang bán";
-    }
-
-    private void NapDonMoi()
-    {
-        var donMoi = MockData.DonHangCuaGianHang
-            .Where(d => d.GianHangId == MockData.GianHangHienTai.Id && d.TrangThai == TrangThaiDonHang.ChoXacNhan)
-            .OrderBy(d => d.NgayDat)
-            .ToList();
-
-        DsDonMoi.ItemsSource = donMoi;
-        LblKhongCoDonMoi.IsVisible = donMoi.Count == 0;
-    }
-
-    private void OnSwitchMoCuaToggled(object? sender, ToggledEventArgs e)
-    {
-        MockData.GianHangHienTai.DangMoCua = e.Value;
-        VendorLocalStore.Luu();
-        LblTrangThaiMoCua.Text = e.Value ? "Đang mở bán" : "Đang tạm đóng";
-        // TODO: gọi PUT /api/gian-hang/{id}/trang-thai-kinh-doanh { dangMoCua } khi có API thật.
-    }
-
-    private async void OnXacNhanNhanhClicked(object sender, EventArgs e)
-    {
-        if (sender is not Button { CommandParameter: DonHang don }) return;
-
-        don.TrangThai = TrangThaiDonHang.DangLam;
-        VendorLocalStore.Luu();
-        // TODO: gọi PUT /api/gian-hang/don-hang/{id}/xac-nhan khi có API thật.
-
-        NapThongKeNhanh();
-        NapDonMoi();
-        await DisplayAlert("Đã xác nhận", $"Đơn #{don.Id} đã được xác nhận và chuyển sang chuẩn bị món.", "OK");
-    }
-
-    private async void OnTuChoiNhanhClicked(object sender, EventArgs e)
-    {
-        if (sender is not Button { CommandParameter: DonHang don }) return;
-
-        bool xacNhan = await DisplayAlert(
-            "Từ chối đơn hàng",
-            $"Từ chối đơn #{don.Id}? Khách hàng sẽ được hoàn tiền tự động theo quy định.",
-            "Từ chối", "Để sau");
-        if (!xacNhan) return;
-
-        don.TrangThai = TrangThaiDonHang.DaHuy;
-        VendorLocalStore.Luu();
-        // TODO: gọi PUT /api/gian-hang/don-hang/{id}/tu-choi khi có API thật (kèm xử lý hoàn tiền).
-
-        NapThongKeNhanh();
-        NapDonMoi();
-    }
-
+    private async void OnXacNhanNhanhClicked(object sender, EventArgs e) => await Update(sender, "DaXacNhan");
+    private async void OnTuChoiNhanhClicked(object sender, EventArgs e) => await Update(sender, "DaHuy");
     private async void OnXemDonHangTapped(object sender, EventArgs e) => await Shell.Current.GoToAsync(nameof(VendorOrdersPage));
     private async void OnXemThucDonTapped(object sender, EventArgs e) => await Shell.Current.GoToAsync(nameof(VendorMenuPage));
     private async void OnXemDoanhThuTapped(object sender, EventArgs e) => await Shell.Current.GoToAsync(nameof(VendorRevenuePage));
     private async void OnXemHoSoTapped(object sender, EventArgs e) => await Shell.Current.GoToAsync(nameof(VendorProfilePage));
     private async void OnXemKhuyenMaiTapped(object sender, EventArgs e) => await Shell.Current.GoToAsync(nameof(VendorPromotionsPage));
-
-    private void OnRefreshing(object? sender, EventArgs e)
-    {
-        NapHoSo();
-        NapThongKeNhanh();
-        NapDonMoi();
-        RefreshTrangChu.IsRefreshing = false;
-    }
-
+    private async void OnXemChienDichTapped(object sender, EventArgs e) => await Shell.Current.GoToAsync(nameof(VendorCampaignsPage));
+    private async void OnXemCauHinhTapped(object sender, EventArgs e) => await Shell.Current.GoToAsync(nameof(VendorSettingsPage));
+    private async void OnRefreshing(object? sender, EventArgs e) { try { await Reload(); } finally { RefreshTrangChu.IsRefreshing = false; } }
     private async void OnDangXuatClicked(object sender, EventArgs e)
     {
-        bool xacNhan = await DisplayAlert("Đăng xuất", "Bạn có chắc muốn đăng xuất khỏi gian hàng?", "Đăng xuất", "Hủy");
-        if (!xacNhan) return;
-
-        MockData.GianHangHienTai = MockData.DanhSachGianHang.First(g => g.Id == "gh1");
-        await Shell.Current.GoToAsync("//dang-nhap");
+        ApiClient.Logout("GianHang"); VendorWorkspace.Clear(); await Shell.Current.GoToAsync("//dang-nhap");
     }
 }

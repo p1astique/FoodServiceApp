@@ -7,8 +7,8 @@
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="12">
 
-            <Label Text="Biểu tượng món (emoji)" FontSize="13" FontAttributes="Bold" />
-            <Entry x:Name="EntryHinhAnh" Placeholder="🍛" MaxLength="4" />
+            <Label Text="Đường dẫn ảnh món" FontSize="13" FontAttributes="Bold" />
+            <Entry x:Name="EntryHinhAnh" Placeholder="https://... hoặc /uploads/..." MaxLength="255" />
 
             <Label Text="Tên món *" FontSize="13" FontAttributes="Bold" />
             <Entry x:Name="EntryTenMon" Placeholder="VD: Cơm tấm sườn bì chả" />
@@ -27,6 +27,17 @@
 
             <Label Text="Giá bán (đ) *" FontSize="13" FontAttributes="Bold" />
             <Entry x:Name="EntryGia" Placeholder="VD: 45000" Keyboard="Numeric" />
+
+            <Label Text="Mô tả món" FontSize="13" FontAttributes="Bold" />
+            <Editor x:Name="EntryMoTa" Placeholder="Mô tả ngắn về món" AutoSize="TextChanges" />
+
+            <Label Text="Kích cỡ" FontSize="13" FontAttributes="Bold" />
+            <Entry x:Name="EntryKichCo" Placeholder="Nhỏ, Vừa, Lớn" />
+            <Label Text="Topping" FontSize="13" FontAttributes="Bold" />
+            <Entry x:Name="EntryTopping" Placeholder="Trứng, Phô mai, Trân châu" />
+            <Label Text="Mức cay" FontSize="13" FontAttributes="Bold" />
+            <Entry x:Name="EntryMucCay" Placeholder="Không cay, Cay vừa, Cay nhiều" />
+            <Label Text="Các lựa chọn phân cách bằng dấu phẩy." FontSize="11" TextColor="{StaticResource TextGrey}" />
 
             <Grid ColumnDefinitions="*,Auto" Margin="0,6,0,0">
                 <Label Grid.Column="0" Text="Còn hàng (đang mở bán món này)" FontSize="13" VerticalOptions="Center" />

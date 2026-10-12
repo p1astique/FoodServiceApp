@@ -52,7 +52,10 @@ namespace FoodServiceApp.Web.Services
             if (string.IsNullOrWhiteSpace(relativeUrl))
                 return;
 
-            var fullPath = Path.Combine(_env.WebRootPath ?? "wwwroot", relativeUrl.TrimStart('/'));
+            if (!relativeUrl.StartsWith("/uploads/", StringComparison.OrdinalIgnoreCase)) return;
+            var root = Path.GetFullPath(Path.Combine(_env.WebRootPath ?? "wwwroot", "uploads")) + Path.DirectorySeparatorChar;
+            var fullPath = Path.GetFullPath(Path.Combine(root, relativeUrl["/uploads/".Length..]));
+            if (!fullPath.StartsWith(root, StringComparison.OrdinalIgnoreCase)) return;
             if (File.Exists(fullPath))
                 File.Delete(fullPath);
         }

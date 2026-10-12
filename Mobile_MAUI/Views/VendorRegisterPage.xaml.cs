@@ -1,3 +1,4 @@
+using FoodServiceApp.Maui.Services;
 using FoodServiceApp.Maui.Models;
 
 namespace FoodServiceApp.Maui.Views;
@@ -33,11 +34,6 @@ public partial class VendorRegisterPage : ContentPage
             HienLoi("Email không hợp lệ");
             return;
         }
-        if (MockData.DanhSachGianHang.Any(g => string.Equals(g.Email, EntryEmail.Text.Trim(), StringComparison.OrdinalIgnoreCase)))
-        {
-            HienLoi("Email này đã được đăng ký cho một gian hàng khác");
-            return;
-        }
         if (string.IsNullOrWhiteSpace(EntryMatKhau.Text) || EntryMatKhau.Text.Length < 6)
         {
             HienLoi("Mật khẩu tối thiểu 6 ký tự");
@@ -50,36 +46,19 @@ public partial class VendorRegisterPage : ContentPage
 
         try
         {
-            // TODO: gọi ASP.NET Core Web API thật:
-            //   POST /api/gian-hang/dang-ky { tenGianHang, diaChi, sdt, email, matKhau, moTa }
-            // Hồ sơ mặc định ở trạng thái ChoDuyet, quản trị viên duyệt trong module Quản lý quản trị.
-            await Task.Delay(600);
-
-            var gianHangMoi = new GianHang
-            {
-                Id = "gh" + (MockData.DanhSachGianHang.Count + 1),
-                TenGianHang = EntryTenGianHang.Text.Trim(),
-                DiaChi = EntryDiaChi.Text.Trim(),
-                SoDienThoai = EntrySdt.Text.Trim(),
-                Email = EntryEmail.Text.Trim(),
-                MatKhau = EntryMatKhau.Text,
-                MoTa = EditorMoTa.Text?.Trim() ?? "",
-                HinhAnh = "🍽️",
-                DanhGia = 0,
-                ThoiGianGiaoPhut = 30,
-                DangMoCua = false,
-                TrangThaiDangKy = TrangThaiDangKyGianHang.ChoDuyet,
-                NgayDangKy = DateTime.Now,
-            };
-            MockData.DanhSachGianHang.Add(gianHangMoi);
-
+            await ApiClient.SendAsync(HttpMethod.Post, "api/vendor/register", new {
+                TenDangNhap = EntryEmail.Text.Trim(), MatKhau = EntryMatKhau.Text,
+                TenCuaHang = EntryTenGianHang.Text.Trim(), DiaChi = EntryDiaChi.Text.Trim(),
+                SDT = EntrySdt.Text.Trim(), MoTa = EditorMoTa.Text?.Trim()
+            }, role: null);
             await DisplayAlert(
                 "Đăng ký thành công",
-                "Hồ sơ gian hàng đã được gửi. Quản trị viên sẽ duyệt trong thời gian sớm nhất, bạn sẽ nhận thông báo qua email khi được kích hoạt.",
+                "Hồ sơ đã được lưu trên máy chủ và đang chờ quản trị viên duyệt.",
                 "Đã hiểu");
 
             await Shell.Current.GoToAsync("..");
         }
+        catch (Exception ex) { HienLoi(ex.Message); }
         finally
         {
             LoadingIndicator.IsVisible = false;

@@ -1,3 +1,4 @@
+using FoodServiceApp.Maui.Services;
 using FoodServiceApp.Maui.Models;
 
 namespace FoodServiceApp.Maui.Views;
@@ -9,27 +10,20 @@ public partial class AdminHomePage : ContentPage
         InitializeComponent();
     }
 
-    protected override void OnAppearing()
+    protected override async void OnAppearing()
     {
         base.OnAppearing();
-        NapTongQuan();
+        await NapTongQuan();
     }
 
-    private void NapTongQuan()
-    {
-        LblChaoAdmin.Text = $"Xin chào, {MockData.QuanTriVienHienTai.HoTen}";
-
-        var gianHangDaDuyet = MockData.DanhSachGianHang.Where(g => g.TrangThaiDangKy == TrangThaiDangKyGianHang.DaDuyet).ToList();
-        LblTongGianHang.Text = gianHangDaDuyet.Count.ToString();
-        LblTongKhachHang.Text = MockData.DanhSachKhachHang.Count.ToString();
-
-        var tongDoanhThu = gianHangDaDuyet.Sum(g => MockData.DoanhThuUocTinh(g.Id));
-        LblTongDoanhThu.Text = $"{tongDoanhThu:N0}đ";
-
-        var soChoDuyet = MockData.DanhSachGianHang.Count(g => g.TrangThaiDangKy == TrangThaiDangKyGianHang.ChoDuyet);
-        LblSoChoDuyet.Text = soChoDuyet > 0 ? $"{soChoDuyet} hồ sơ mới" : "Không có hồ sơ mới";
-    }
-
+    private Task NapTongQuan() => ApiUi.Run(this, async () => {
+        var home = await ApiClient.GetAsync<AdminSummary>("api/admin/home", "QuanTri");
+        var pending = await new VendorRegistrationApiClient().GetPendingAsync();
+        LblChaoAdmin.Text = "Cổng quản trị";
+        LblTongGianHang.Text = home.TongGianHang.ToString(); LblTongKhachHang.Text = home.TongKhachHang.ToString();
+        LblTongDoanhThu.Text = $"{home.DoanhThuHomNay:N0}đ hôm nay"; LblSoChoDuyet.Text = $"{pending.Count} hồ sơ chờ duyệt";
+    });
+    private record AdminSummary(int TongGianHang, int TongKhachHang, decimal DoanhThuHomNay);
     private async void OnDuyetGianHangTapped(object sender, EventArgs e) => await Shell.Current.GoToAsync(nameof(AdminVendorApprovalPage));
     private async void OnDanhSachGianHangTapped(object sender, EventArgs e) => await Shell.Current.GoToAsync(nameof(AdminVendorListPage));
     private async void OnKhachHangTapped(object sender, EventArgs e) => await Shell.Current.GoToAsync(nameof(AdminCustomerListPage));
@@ -37,9 +31,9 @@ public partial class AdminHomePage : ContentPage
     private async void OnKhuyenMaiTapped(object sender, EventArgs e) => await Shell.Current.GoToAsync(nameof(AdminPromotionsPage));
     private async void OnThongKeTapped(object sender, EventArgs e) => await Shell.Current.GoToAsync(nameof(AdminStatisticsPage));
 
-    private void OnRefreshing(object? sender, EventArgs e)
+    private async void OnRefreshing(object? sender, EventArgs e)
     {
-        NapTongQuan();
+        await NapTongQuan();
         RefreshTrangChu.IsRefreshing = false;
     }
 
@@ -48,6 +42,7 @@ public partial class AdminHomePage : ContentPage
         bool xacNhan = await DisplayAlert("Đăng xuất", "Bạn có chắc muốn đăng xuất khỏi cổng quản trị?", "Đăng xuất", "Hủy");
         if (!xacNhan) return;
 
+        ApiClient.Logout("QuanTri");
         await Shell.Current.GoToAsync("//dang-nhap");
     }
 }

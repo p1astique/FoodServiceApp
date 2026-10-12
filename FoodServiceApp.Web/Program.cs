@@ -21,7 +21,8 @@ builder.Services.AddSwaggerGen(c => c.SwaggerDoc("v1", new() { Title = "FoodServ
 // database QuanLyDichVuAnUong; nếu chưa có database thì dùng instance đầu tiên
 // đang truy cập được để EF Core có thể tự tạo database. Có thể ghi đè bằng
 // ConnectionStrings:DefaultConnection hoặc biến môi trường FOOD_DB_CONNECTION.
-var configuredConnection = Environment.GetEnvironmentVariable("FOOD_DB_CONNECTION")
+var explicitConnection = Environment.GetEnvironmentVariable("FOOD_DB_CONNECTION");
+var configuredConnection = explicitConnection
     ?? builder.Configuration.GetConnectionString("DefaultConnection");
 
 var databaseName = "QuanLyDichVuAnUong";
@@ -50,6 +51,8 @@ if (!string.IsNullOrWhiteSpace(configuredConnection))
     }
     catch
     {
+        if (!string.IsNullOrWhiteSpace(explicitConnection))
+            throw new InvalidOperationException("Không kết nối được FOOD_DB_CONNECTION. Không tự chuyển sang Database khác.");
         // Nếu connection string cũ (ví dụ localhost) không chạy, thử các instance
         // phổ biến bên dưới thay vì làm ứng dụng crash ngay lúc khởi động.
     }
@@ -214,6 +217,13 @@ using (var scope = app.Services.CreateScope())
     {
         Console.WriteLine($"[Database] Không thể khởi tạo SQL Server: {ex.Message}");
     }
+}
+
+if (args.Contains("--bootstrap-admin"))
+{
+    using var scope = app.Services.CreateScope();
+    await AdminBootstrap.RunAsync(scope.ServiceProvider.GetRequiredService<AppDbContext>());
+    return;
 }
 
 if (app.Environment.IsDevelopment())

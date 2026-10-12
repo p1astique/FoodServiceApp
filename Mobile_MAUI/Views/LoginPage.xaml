@@ -33,7 +33,7 @@
                 <Entry x:Name="EntrySdt" Placeholder="Số điện thoại" Keyboard="Telephone" />
             </VerticalStackLayout>
 
-            <Entry x:Name="EntryEmail" Placeholder="Email" Keyboard="Email" />
+            <Entry x:Name="EntryEmail" Placeholder="Tên đăng nhập" Keyboard="Default" />
             <Entry x:Name="EntryMatKhau" Placeholder="Mật khẩu" IsPassword="True" />
 
             <Label x:Name="LblQuenMatKhau" Text="Quên mật khẩu?" TextColor="{StaticResource Primary}"
@@ -48,6 +48,7 @@
 
             <Button x:Name="BtnXacNhan" Text="Đăng nhập" Style="{StaticResource PrimaryButton}"
                     Clicked="OnXacNhanClicked" />
+            <Button Text="Cấu hình máy chủ" Clicked="OnConfigureServerClicked" BackgroundColor="Transparent" TextColor="{StaticResource Primary}" />
 
             <Label x:Name="LblLoi" TextColor="{StaticResource Danger}" FontSize="12"
                    HorizontalOptions="Center" IsVisible="False" />

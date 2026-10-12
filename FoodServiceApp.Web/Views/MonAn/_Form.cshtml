@@ -23,6 +23,7 @@
             <option value="@dm.MaDanhMuc">@dm.TenDanhMuc</option>
         }
     </select>
+    <span asp-validation-for="MaDanhMuc" class="field-validation-error"></span>
 </div>
 
 <div class="form-group">
@@ -33,6 +34,12 @@
 <div class="form-group">
     <label asp-for="MoTa">Mô tả</label>
     <textarea asp-for="MoTa" class="form-control" placeholder="Mô tả ngắn về món ăn (không bắt buộc)"></textarea>
+</div>
+
+<div class="grid-3">
+    <div class="form-group"><label asp-for="KichCo">Kích cỡ</label><input asp-for="KichCo" class="form-control" placeholder="Nhỏ, Vừa, Lớn" /><span class="text-muted" style="font-size:12px">Phân cách bằng dấu phẩy.</span></div>
+    <div class="form-group"><label asp-for="Topping">Topping</label><input asp-for="Topping" class="form-control" placeholder="Trứng, Phô mai, Trân châu" /><span class="text-muted" style="font-size:12px">Phân cách bằng dấu phẩy.</span></div>
+    <div class="form-group"><label asp-for="MucCay">Mức cay</label><input asp-for="MucCay" class="form-control" placeholder="Không cay, Cay vừa, Cay nhiều" /><span class="text-muted" style="font-size:12px">Phân cách bằng dấu phẩy.</span></div>
 </div>
 
 <div class="form-group">

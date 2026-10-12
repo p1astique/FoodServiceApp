@@ -1,3 +1,4 @@
+using FoodServiceApp.Maui.Services;
 using FoodServiceApp.Maui.Models;
 
 namespace FoodServiceApp.Maui.Views;
@@ -9,17 +10,16 @@ public partial class VendorRevenuePage : ContentPage
         InitializeComponent();
     }
 
-    protected override void OnAppearing()
+    protected override async void OnAppearing()
     {
         base.OnAppearing();
-        NapBaoCao();
+        await ApiUi.Run(this, async () => { DsDonHoanThanh.ItemsSource = null; await VendorWorkspace.LoadAsync(); NapBaoCao(); });
     }
 
     private void NapBaoCao()
     {
-        // TODO: thay bằng GET /api/gian-hang/doanh-thu?tu=...&den=... khi có API thật.
-        var donHoanThanh = MockData.DonHangCuaGianHang
-            .Where(d => d.GianHangId == MockData.GianHangHienTai.Id && d.TrangThai == TrangThaiDonHang.HoanThanh)
+        var donHoanThanh = VendorWorkspace.Orders
+            .Where(d => d.GianHangId == VendorWorkspace.Store.Id && d.TrangThai == TrangThaiDonHang.HoanThanh)
             .OrderByDescending(d => d.NgayDat)
             .ToList();
 

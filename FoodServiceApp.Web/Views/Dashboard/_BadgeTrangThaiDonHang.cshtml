@@ -3,7 +3,10 @@
     var (css, nhan) = Model switch
     {
         "ChoXacNhan" => ("badge-warning", "Chờ xác nhận"),
-        "DaXacNhan" => ("badge-primary", "Đang chuẩn bị"),
+        "DaXacNhan" => ("badge-primary", "Đã xác nhận"),
+        "DangChuanBi" => ("badge-primary", "Đang chuẩn bị"),
+        "SanSangGiao" => ("badge-primary", "Sẵn sàng giao"),
+        "TaiXeDaNhan" => ("badge-primary", "Tài xế đã nhận"),
         "DangGiao" => ("badge-primary", "Đang giao"),
         "DaGiao" => ("badge-success", "Hoàn thành"),
         "DaHuy" => ("badge-danger", "Đã hủy"),

@@ -19,7 +19,7 @@ namespace FoodServiceApp.Web.Controllers
         [HttpGet("ChoNhan")]
         public async Task<IActionResult> ChoNhan()
         {
-            var dangGiao = await _db.DonHangs.AnyAsync(d => d.MaTaiXe == CurrentTaiXeId && d.TrangThai == "DangGiao");
+            var dangGiao = await _db.DonHangs.AnyAsync(d => d.MaTaiXe == CurrentTaiXeId && (d.TrangThai == "TaiXeDaNhan" || d.TrangThai == "DangGiao"));
             if (dangGiao)
             {
                 TempData["LoiThongBao"] = "Bạn đang có một chuyến giao chưa hoàn thành, hãy xử lý xong trước khi nhận đơn mới.";
@@ -35,7 +35,7 @@ namespace FoodServiceApp.Web.Controllers
             var danhSach = await _db.DonHangs
                 .Include(d => d.GianHang)
                 .Include(d => d.ChiTiets)
-                .Where(d => d.TrangThai == "DaXacNhan" && d.MaTaiXe == null
+                .Where(d => d.TrangThai == "SanSangGiao" && d.MaTaiXe == null
                     && !_db.TaiXeTuChoiDons.Any(t => t.MaTaiXe == CurrentTaiXeId && t.MaDonHang == d.MaDonHang))
                 .OrderBy(d => d.NgayDat)
                 .ToListAsync();
@@ -55,7 +55,7 @@ namespace FoodServiceApp.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> TuChoi(int id)
         {
-            var conCho = await _db.DonHangs.AnyAsync(d => d.MaDonHang == id && d.TrangThai == "DaXacNhan" && d.MaTaiXe == null);
+            var conCho = await _db.DonHangs.AnyAsync(d => d.MaDonHang == id && d.TrangThai == "SanSangGiao" && d.MaTaiXe == null);
             var daTuChoi = await _db.TaiXeTuChoiDons.AnyAsync(t => t.MaTaiXe == CurrentTaiXeId && t.MaDonHang == id);
             if (conCho && !daTuChoi)
             {
@@ -70,14 +70,14 @@ namespace FoodServiceApp.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Nhan(int id)
         {
-            var dangGiao = await _db.DonHangs.AnyAsync(d => d.MaTaiXe == CurrentTaiXeId && d.TrangThai == "DangGiao");
+            var dangGiao = await _db.DonHangs.AnyAsync(d => d.MaTaiXe == CurrentTaiXeId && (d.TrangThai == "TaiXeDaNhan" || d.TrangThai == "DangGiao"));
             if (dangGiao)
             {
                 TempData["LoiThongBao"] = "Bạn đang có một chuyến giao chưa hoàn thành.";
                 return RedirectToAction("DonHienTai");
             }
 
-            var don = await _db.DonHangs.FirstOrDefaultAsync(d => d.MaDonHang == id && d.TrangThai == "DaXacNhan" && d.MaTaiXe == null);
+            var don = await _db.DonHangs.FirstOrDefaultAsync(d => d.MaDonHang == id && d.TrangThai == "SanSangGiao" && d.MaTaiXe == null);
             if (don == null)
             {
                 TempData["LoiThongBao"] = "Đơn này đã có tài xế khác nhận hoặc không còn tồn tại.";
@@ -85,7 +85,7 @@ namespace FoodServiceApp.Web.Controllers
             }
 
             don.MaTaiXe = CurrentTaiXeId;
-            don.TrangThai = "DangGiao";
+            don.TrangThai = "TaiXeDaNhan";
 
             _db.GiaoHangs.Add(new GiaoHang
             {
@@ -97,6 +97,9 @@ namespace FoodServiceApp.Web.Controllers
 
             var taiXe = await _db.TaiXes.FirstAsync(t => t.MaTaiXe == CurrentTaiXeId);
             taiXe.TrangThai = "DangGiao";
+
+            _db.NhatKyTrangThaiDons.Add(new NhatKyTrangThaiDon { MaDonHang = id, TrangThaiCu = "SanSangGiao",
+                TrangThaiMoi = "TaiXeDaNhan", LoaiNguoiThucHien = "TaiXe", MaNguoiThucHien = CurrentTaiXeId });
 
             await _db.SaveChangesAsync();
             TempData["ThongBao"] = $"Đã nhận đơn #{don.MaDonHang}.";
@@ -111,7 +114,7 @@ namespace FoodServiceApp.Web.Controllers
                 .Include(d => d.GianHang)
                 .Include(d => d.ChiTiets).ThenInclude(c => c.MonAn)
                 .Include(d => d.GiaoHang)
-                .FirstOrDefaultAsync(d => d.MaTaiXe == CurrentTaiXeId && d.TrangThai == "DangGiao");
+                .FirstOrDefaultAsync(d => d.MaTaiXe == CurrentTaiXeId && (d.TrangThai == "TaiXeDaNhan" || d.TrangThai == "DangGiao"));
 
             return View(don);
         }
@@ -124,6 +127,11 @@ namespace FoodServiceApp.Web.Controllers
             if (giaoHang == null) return NotFound();
 
             giaoHang.TrangThai = "DangGiao";
+            var don = await _db.DonHangs.FirstAsync(d => d.MaDonHang == id && d.MaTaiXe == CurrentTaiXeId);
+            if (don.TrangThai != "TaiXeDaNhan") return Conflict();
+            don.TrangThai = "DangGiao";
+            _db.NhatKyTrangThaiDons.Add(new NhatKyTrangThaiDon { MaDonHang = id, TrangThaiCu = "TaiXeDaNhan",
+                TrangThaiMoi = "DangGiao", LoaiNguoiThucHien = "TaiXe", MaNguoiThucHien = CurrentTaiXeId });
             await _db.SaveChangesAsync();
             return RedirectToAction("DonHienTai");
         }
@@ -142,6 +150,9 @@ namespace FoodServiceApp.Web.Controllers
 
             var taiXe = await _db.TaiXes.FirstAsync(t => t.MaTaiXe == CurrentTaiXeId);
             taiXe.TrangThai = "SanSang";
+
+            _db.NhatKyTrangThaiDons.Add(new NhatKyTrangThaiDon { MaDonHang = id, TrangThaiCu = "DangGiao",
+                TrangThaiMoi = "DaGiao", LoaiNguoiThucHien = "TaiXe", MaNguoiThucHien = CurrentTaiXeId });
 
             await _db.SaveChangesAsync();
             TempData["ThongBao"] = $"Đã hoàn thành giao đơn #{don.MaDonHang}.";

@@ -32,21 +32,8 @@
                                         <Label FontSize="11.5" TextColor="{StaticResource TextGrey}">
                                             <Label.FormattedText>
                                                 <FormattedString>
-                                                    <Span Text="Đơn tối thiểu " />
-                                                    <Span Text="{Binding GiaTriDonToiThieu, StringFormat='{0:N0}đ'}" />
-                                                    <Span Text="   •   Hết hạn " />
+                                                    <Span Text="Hết hạn " />
                                                     <Span Text="{Binding NgayKetThuc, StringFormat='{0:dd/MM/yyyy}'}" />
-                                                </FormattedString>
-                                            </Label.FormattedText>
-                                        </Label>
-                                        <Label FontSize="11.5" TextColor="{StaticResource TextGrey}">
-                                            <Label.FormattedText>
-                                                <FormattedString>
-                                                    <Span Text="Đã dùng " />
-                                                    <Span Text="{Binding SoLuongDaDung}" />
-                                                    <Span Text="/" />
-                                                    <Span Text="{Binding SoLuongToiDa}" />
-                                                    <Span Text=" lượt" />
                                                 </FormattedString>
                                             </Label.FormattedText>
                                         </Label>

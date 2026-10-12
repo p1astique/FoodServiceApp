@@ -21,30 +21,14 @@ public class AdminVendorDto
 
 public class VendorRegistrationApiClient
 {
-    private readonly HttpClient _httpClient;
-
-    public VendorRegistrationApiClient()
+    public Task<List<AdminVendorDto>> GetPendingAsync() => ApiClient.GetAsync<List<AdminVendorDto>>("api/admin/vendors/pending", "QuanTri");
+    public Task<List<AdminVendorDto>> GetApprovedAsync() => ApiClient.GetAsync<List<AdminVendorDto>>("api/admin/vendors/by-status?status=DaDuyet", "QuanTri");
+    private static async Task<bool> Post(string path)
     {
-        _httpClient = new HttpClient
-        {
-            BaseAddress = new Uri("https://localhost:5001/"),
-            DefaultRequestVersion = HttpVersion.Version11,
-            DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrLower
-        };
+        await ApiClient.SendAsync(HttpMethod.Post, path, null, "QuanTri");
+        return true;
     }
-
-    public async Task<List<AdminVendorDto>> GetPendingAsync() =>
-        await _httpClient.GetFromJsonAsync<List<AdminVendorDto>>("api/admin/vendors/pending") ?? [];
-
-    public async Task<List<AdminVendorDto>> GetApprovedAsync() =>
-        await _httpClient.GetFromJsonAsync<List<AdminVendorDto>>("api/admin/vendors/by-status?status=DaDuyet") ?? [];
-
-    public async Task<bool> ApproveAsync(int id) =>
-        (await _httpClient.PostAsync($"api/admin/vendors/{id}/approve", null)).IsSuccessStatusCode;
-
-    public async Task<bool> RejectAsync(int id) =>
-        (await _httpClient.PostAsync($"api/admin/vendors/{id}/reject", null)).IsSuccessStatusCode;
-
-    public async Task<bool> ToggleLockAsync(int id) =>
-        (await _httpClient.PostAsync($"api/admin/vendors/{id}/toggle-lock", null)).IsSuccessStatusCode;
+    public Task<bool> ApproveAsync(int id) => Post($"api/admin/vendors/{id}/approve");
+    public Task<bool> RejectAsync(int id) => Post($"api/admin/vendors/{id}/reject");
+    public Task<bool> ToggleLockAsync(int id) => Post($"api/admin/vendors/{id}/toggle-lock");
 }

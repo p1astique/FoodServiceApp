@@ -35,7 +35,7 @@ public partial class AdminVendorApprovalPage : ContentPage
     {
         if (sender is not Button { CommandParameter: AdminVendorDto vendor }) return;
         if (!await DisplayAlert("Duyệt hồ sơ", $"Duyệt gian hàng \"{vendor.TenCuaHang}\"?", "Duyệt", "Để sau")) return;
-        if (!await _api.ApproveAsync(vendor.MaGianHang))
+        if (!await SafeAction(() => _api.ApproveAsync(vendor.MaGianHang)))
         {
             await DisplayAlert("Không thành công", "Server không thể duyệt hồ sơ này.", "OK");
             return;
@@ -48,7 +48,7 @@ public partial class AdminVendorApprovalPage : ContentPage
     {
         if (sender is not Button { CommandParameter: AdminVendorDto vendor }) return;
         if (!await DisplayAlert("Từ chối hồ sơ", $"Từ chối \"{vendor.TenCuaHang}\"?", "Từ chối", "Để sau")) return;
-        if (!await _api.RejectAsync(vendor.MaGianHang))
+        if (!await SafeAction(() => _api.RejectAsync(vendor.MaGianHang)))
         {
             await DisplayAlert("Không thành công", "Server không thể từ chối hồ sơ này.", "OK");
             return;
@@ -60,5 +60,11 @@ public partial class AdminVendorApprovalPage : ContentPage
     {
         try { await NapDanhSachAsync(); }
         finally { RefreshDsChoDuyet.IsRefreshing = false; }
+    }
+    private async Task<bool> SafeAction(Func<Task<bool>> action)
+    {
+        var success = false;
+        await ApiUi.Run(this, async () => { success = await action(); });
+        return success;
     }
 }

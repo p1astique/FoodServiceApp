@@ -67,7 +67,7 @@ namespace FoodServiceApp.Web.Controllers.Api
             var result = donHangs.Select(d => new DonHangDto(
                 d.MaDonHang, d.TrangThai, d.TongTien, d.NgayDat, d.DiaChiGiaoHang, d.GhiChu,
                 d.GianHang!.TenCuaHang, d.GianHang.DiaChi,
-                d.ChiTiets.Select(c => new ChiTietDonHangDto(c.MonAn!.TenMon, c.SoLuong, c.DonGia, c.ThanhTien)).ToList()
+                d.ChiTiets.Select(c => new ChiTietDonHangDto(c.TenMon, c.SoLuong, c.DonGia, c.ThanhTien, c.TuyChonMon)).ToList(), d.PhiGiaoHang
             ));
 
             return Ok(result);
@@ -80,22 +80,10 @@ namespace FoodServiceApp.Web.Controllers.Api
             var don = await _db.DonHangs.FirstOrDefaultAsync(d => d.MaDonHang == id && d.MaGianHang == maGianHang);
             if (don == null) return NotFound();
 
-            // Gian hàng chỉ được: ChoXacNhan -> DaXacNhan/DaHuy, DaXacNhan -> DaHuy.
-            // Việc chuyển sang DangGiao do tài xế tự nhận đơn (xem DriverController).
-            var chuyenHopLe = new Dictionary<string, string[]>
-            {
-                ["ChoXacNhan"] = new[] { "DaXacNhan", "DaHuy" },
-                ["DaXacNhan"] = new[] { "DaHuy" },
-            };
-
-            if (!chuyenHopLe.TryGetValue(don.TrangThai, out var choPhep) || !choPhep.Contains(request.TrangThaiMoi))
-                return BadRequest(new { message = "Không thể chuyển sang trạng thái này." });
-
-            don.TrangThai = request.TrangThaiMoi;
-            await _db.SaveChangesAsync();
-            return Ok(new { don.TrangThai });
+            if (!await FoodServiceApp.Web.Services.VendorOrderService.UpdateAsync(_db, maGianHang, id, request.TrangThaiMoi, request.LyDo))
+                return Conflict(new { message = "Đơn đã đổi trạng thái hoặc thao tác không hợp lệ. Hãy tải lại." });
+            return Ok(new { TrangThai = request.TrangThaiMoi });
         }
-
         [HttpGet("menu")]
         public async Task<IActionResult> Menu()
         {

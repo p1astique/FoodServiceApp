@@ -7,6 +7,15 @@
     <h2>Đơn hàng #@Model.MaDonHang</h2>
     <a asp-action="Index" class="btn btn-outline btn-sm">← Quay lại danh sách</a>
 </div>
+@{
+    var nhatKy = (List<NhatKyTrangThaiDon>?)ViewBag.NhatKy ?? new();
+}
+@if (nhatKy.Any())
+{
+    <div class="card mt-3"><h3 style="margin-top:0;">Timeline xử lý</h3>
+    @foreach (var log in nhatKy) { <div class="mb-2"><strong>@log.TrangThaiCu → @log.TrangThaiMoi</strong> · @log.ThoiGian.ToString("HH:mm dd/MM/yyyy") · @log.LoaiNguoiThucHien@if (!string.IsNullOrWhiteSpace(log.LyDo)) { <div class="text-muted">@log.LyDo</div> }</div> }
+    </div>
+}
 
 <div class="grid-2">
     <div class="card">
@@ -17,7 +26,7 @@
                 @foreach (var ct in Model.ChiTiets)
                 {
                     <tr>
-                        <td>@ct.MonAn?.TenMon</td>
+                        <td>@ct.TenMon@if (!string.IsNullOrWhiteSpace(ct.TuyChonMon)) { <div class="text-muted" style="font-size:11px">@ct.TuyChonMon</div> }</td>
                         <td>@ct.SoLuong</td>
                         <td>@ct.DonGia.ToString("N0")đ</td>
                         <td>@ct.ThanhTien.ToString("N0")đ</td>
@@ -38,6 +47,10 @@
         @if (!string.IsNullOrEmpty(Model.GhiChu))
         {
             <p><strong>Ghi chú:</strong> @Model.GhiChu</p>
+        }
+        @if (!string.IsNullOrEmpty(Model.LyDoHuy))
+        {
+            <p><strong>Lý do hủy:</strong> @Model.LyDoHuy</p>
         }
         @if (Model.ThanhToan != null)
         {

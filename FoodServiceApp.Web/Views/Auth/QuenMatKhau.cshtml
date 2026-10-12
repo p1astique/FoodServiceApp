@@ -1,0 +1,14 @@
+@model FoodServiceApp.Web.Models.ViewModels.VendorForgotPasswordViewModel
+@{ ViewData["Title"] = "Quên mật khẩu"; Layout = "_LoginLayout"; }
+<div class="login-card">
+    <div class="logo">🔐</div><h2>Đặt lại mật khẩu</h2><p class="sub">Xác minh bằng số điện thoại đã đăng ký của cửa hàng</p>
+    <form method="post">
+        <div asp-validation-summary="ModelOnly"></div>
+        <div class="form-group"><label asp-for="TenDangNhap">Tên đăng nhập</label><input asp-for="TenDangNhap" class="form-control" /><span asp-validation-for="TenDangNhap"></span></div>
+        <div class="form-group"><label asp-for="SDT">Số điện thoại đăng ký</label><input asp-for="SDT" class="form-control" /><span asp-validation-for="SDT"></span></div>
+        <div class="form-group"><label asp-for="MatKhauMoi">Mật khẩu mới</label><input asp-for="MatKhauMoi" class="form-control" /><span asp-validation-for="MatKhauMoi"></span></div>
+        <div class="form-group"><label asp-for="XacNhanMatKhauMoi">Xác nhận mật khẩu</label><input asp-for="XacNhanMatKhauMoi" class="form-control" /><span asp-validation-for="XacNhanMatKhauMoi"></span></div>
+        <button class="btn btn-primary btn-full">Đặt lại mật khẩu</button>
+    </form>
+    <div class="mt-3" style="text-align:center"><a asp-action="Login">Quay lại đăng nhập</a></div>
+</div>

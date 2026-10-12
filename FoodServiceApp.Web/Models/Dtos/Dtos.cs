@@ -1,11 +1,13 @@
 namespace FoodServiceApp.Web.Models.Dtos
 {
-    public record LoginRequest(string TenDangNhap, string MatKhau);
+    public record LoginRequest(
+        [System.ComponentModel.DataAnnotations.Required] string TenDangNhap,
+        [System.ComponentModel.DataAnnotations.Required] string MatKhau);
     public record LoginResponse(string Token, string VaiTro, int MaTK, string HoTenHienThi);
 
     public record MonAnDto(int MaMonAn, string TenMon, decimal Gia, string? MoTa, string? HinhAnh, bool ConHang);
 
-    public record ChiTietDonHangDto(string TenMon, int SoLuong, decimal DonGia, decimal ThanhTien);
+    public record ChiTietDonHangDto(string TenMon, int SoLuong, decimal DonGia, decimal ThanhTien, string? TuyChonMon = null);
 
     public record DonHangDto(
         int MaDonHang, string TrangThai, decimal TongTien, DateTime NgayDat,
@@ -34,5 +36,5 @@ namespace FoodServiceApp.Web.Models.Dtos
     public record DriverHomeDto(
         string HoTen, string TrangThai, int SoDonHomNay, decimal ThuNhapHomNay, DonHangDto? DonDangGiao, int SoDonChoNhan);
 
-    public record UpdateOrderStatusRequest(string TrangThaiMoi);
+    public record UpdateOrderStatusRequest(string TrangThaiMoi, string? LyDo = null);
 }

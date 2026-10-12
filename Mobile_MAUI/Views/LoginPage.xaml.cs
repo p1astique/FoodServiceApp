@@ -1,3 +1,4 @@
+using FoodServiceApp.Maui.Services;
 using FoodServiceApp.Maui.Models;
 
 namespace FoodServiceApp.Maui.Views;
@@ -31,9 +32,9 @@ public partial class LoginPage : ContentPage
     {
         LblLoi.IsVisible = false;
 
-        if (string.IsNullOrWhiteSpace(EntryEmail.Text) || !EntryEmail.Text.Contains('@'))
+        if (string.IsNullOrWhiteSpace(EntryEmail.Text))
         {
-            HienLoi("Email không hợp lệ");
+            HienLoi("Vui lòng nhập tên đăng nhập");
             return;
         }
         if (string.IsNullOrWhiteSpace(EntryMatKhau.Text) || EntryMatKhau.Text.Length < 6)
@@ -47,60 +48,21 @@ public partial class LoginPage : ContentPage
             return;
         }
 
-        // Bug cũ: chế độ Đăng ký không kiểm tra trùng email và không thực sự lưu
-        // tài khoản mới vào MockData, nên bấm "Tạo tài khoản" không đăng ký được gì cả.
-        if (!_dangOChedoDangNhap && MockData.DanhSachKhachHang.Any(k =>
-                string.Equals(k.Email, EntryEmail.Text.Trim(), StringComparison.OrdinalIgnoreCase)))
-        {
-            HienLoi("Email này đã được đăng ký, vui lòng đăng nhập");
-            return;
-        }
-
         LoadingIndicator.IsVisible = true;
         LoadingIndicator.IsRunning = true;
         BtnXacNhan.IsEnabled = false;
 
         try
         {
-            // TODO: gọi ASP.NET Core Web API thật:
-            //   POST /api/khach-hang/dang-nhap  { email, matKhau }
-            //   POST /api/khach-hang/dang-ky    { hoTen, sdt, email, matKhau }
-            // Tạm thời giả lập độ trễ mạng để hoàn thiện luồng giao diện.
-            await Task.Delay(600);
-
-            if (_dangOChedoDangNhap)
-            {
-                var taiKhoan = MockData.DanhSachKhachHang.FirstOrDefault(k =>
-                    string.Equals(k.Email, EntryEmail.Text.Trim(), StringComparison.OrdinalIgnoreCase));
-
-                if (taiKhoan == null || taiKhoan.MatKhau != EntryMatKhau.Text)
-                {
-                    HienLoi("Email hoặc mật khẩu không đúng");
-                    return;
-                }
-                if (taiKhoan.TaiKhoanBiKhoa)
-                {
-                    HienLoi("Tài khoản của bạn đã bị khóa");
-                    return;
-                }
-            }
-            else
-            {
-                var khachHangMoi = new KhachHang
-                {
-                    Id = "kh" + (MockData.DanhSachKhachHang.Count + 1),
-                    HoTen = EntryHoTen.Text.Trim(),
-                    Email = EntryEmail.Text.Trim(),
-                    MatKhau = EntryMatKhau.Text,
-                    SoDienThoai = EntrySdt.Text?.Trim() ?? "",
-                    NgayDangKy = DateTime.Now,
-                    TongSoDon = 0,
-                };
-                MockData.DanhSachKhachHang.Add(khachHangMoi);
-            }
-
+            if (!_dangOChedoDangNhap)
+                await ApiClient.SendAsync(HttpMethod.Post, "api/customer/register", new {
+                    TenDangNhap = EntryEmail.Text.Trim(), MatKhau = EntryMatKhau.Text,
+                    HoTen = EntryHoTen.Text.Trim(), SDT = EntrySdt.Text?.Trim() ?? ""
+                }, role: null);
+            await ApiClient.LoginAsync("KhachHang", EntryEmail.Text, EntryMatKhau.Text);
             await AppShell.DangNhapThanhCongAsync();
         }
+        catch (Exception ex) { HienLoi(ex.Message); }
         finally
         {
             LoadingIndicator.IsVisible = false;
@@ -113,6 +75,14 @@ public partial class LoginPage : ContentPage
     {
         LblLoi.Text = thongDiep;
         LblLoi.IsVisible = true;
+    }
+
+    private async void OnConfigureServerClicked(object sender, EventArgs e)
+    {
+        var url = await DisplayPromptAsync("Kết nối máy chủ", "Địa chỉ Web API", initialValue: ApiClient.BaseUrl);
+        if (string.IsNullOrWhiteSpace(url)) return;
+        try { ApiClient.BaseUrl = url; }
+        catch (Exception ex) { HienLoi(ex.Message); }
     }
 
     private async void OnQuenMatKhauTapped(object sender, EventArgs e)

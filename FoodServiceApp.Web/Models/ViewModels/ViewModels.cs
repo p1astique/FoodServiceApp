@@ -40,6 +40,14 @@ namespace FoodServiceApp.Web.Models.ViewModels
         public string XacNhanMatKhau { get; set; } = "";
     }
 
+    public class VendorForgotPasswordViewModel
+    {
+        [Required] public string TenDangNhap { get; set; } = "";
+        [Required, Phone] public string SDT { get; set; } = "";
+        [Required, MinLength(6), DataType(DataType.Password)] public string MatKhauMoi { get; set; } = "";
+        [Required, DataType(DataType.Password)] public string XacNhanMatKhauMoi { get; set; } = "";
+    }
+
     public class DriverRegisterViewModel
     {
         [Required(ErrorMessage = "Vui lòng nhập họ tên")]
@@ -111,11 +119,14 @@ namespace FoodServiceApp.Web.Models.ViewModels
         public decimal Gia { get; set; }
 
         public string? MoTa { get; set; }
+        [StringLength(255)] public string? KichCo { get; set; }
+        [StringLength(500)] public string? Topping { get; set; }
+        [StringLength(255)] public string? MucCay { get; set; }
         public string? HinhAnhHienTai { get; set; }
         public IFormFile? AnhMoi { get; set; }
         public bool ConHang { get; set; } = true;
 
-        public string TenDanhMucMoi { get; set; } = "";
+        [StringLength(100)] public string? TenDanhMucMoi { get; set; }
         public List<DanhMuc> DanhSachDanhMuc { get; set; } = new();
     }
 
@@ -130,9 +141,18 @@ namespace FoodServiceApp.Web.Models.ViewModels
 
         [Required] public string LoaiGiam { get; set; } = "PhanTram"; // PhanTram / SoTien
         public decimal GiaTriGiam { get; set; }
+        [Range(0, 100000000)] public decimal GiaTriDonToiThieu { get; set; }
+        public int? SoLuongToiDa { get; set; }
+        public bool MoiKhachMotLan { get; set; }
+        public bool GiamPhiVanChuyen { get; set; }
+        public decimal? GiamPhiVanChuyenToiDa { get; set; }
         public string? DieuKienApDung { get; set; }
         public int? MaMonAn { get; set; } // chọn món để chỉ giảm giá món đó; để trống = cả đơn
         public List<MonAn> DanhSachMon { get; set; } = new();
+        public int? MaDanhMuc { get; set; }
+        public List<DanhMuc> DanhSachDanhMuc { get; set; } = new();
+        public int? MaGianHangApDung { get; set; }
+        public List<GianHang> DanhSachGianHang { get; set; } = new();
 
         [Required] public DateTime NgayBatDau { get; set; } = DateTime.Today;
         [Required] public DateTime NgayKetThuc { get; set; } = DateTime.Today.AddMonths(1);
@@ -160,7 +180,12 @@ namespace FoodServiceApp.Web.Models.ViewModels
 
     public class DoanhThuViewModel
     {
+        public string Ky { get; set; } = "30ngay";
+        public DateTime TuNgay { get; set; }
+        public DateTime DenNgay { get; set; }
         public decimal TongDoanhThu30Ngay { get; set; }
+        public decimal PhiNenTang { get; set; }
+        public decimal ThucNhan { get; set; }
         public int TongDonHoanThanh30Ngay { get; set; }
         public List<(DateTime Ngay, decimal DoanhThu)> DoanhThuTheoNgay { get; set; } = new();
         public List<(string TenMon, int SoLuongBan)> MonBanChay { get; set; } = new();

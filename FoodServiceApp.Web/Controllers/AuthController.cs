@@ -76,6 +76,28 @@ namespace FoodServiceApp.Web.Controllers
         [HttpGet]
         public IActionResult DangKy() => View(new VendorRegisterViewModel());
 
+        [HttpGet]
+        public IActionResult QuenMatKhau() => View(new VendorForgotPasswordViewModel());
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> QuenMatKhau(VendorForgotPasswordViewModel model)
+        {
+            if (model.MatKhauMoi != model.XacNhanMatKhauMoi)
+                ModelState.AddModelError(nameof(model.XacNhanMatKhauMoi), "Xác nhận mật khẩu không khớp.");
+            if (!ModelState.IsValid) return View(model);
+            var account = await _db.TaiKhoans.SingleOrDefaultAsync(x => x.TenDangNhap == model.TenDangNhap && x.VaiTro == "GianHang");
+            var store = account == null ? null : await _db.GianHangs.SingleOrDefaultAsync(x => x.MaTK == account.MaTK && x.SDT == model.SDT);
+            if (account == null || store == null)
+            {
+                ModelState.AddModelError("", "Tên đăng nhập hoặc số điện thoại đăng ký không đúng.");
+                return View(model);
+            }
+            account.MatKhau = MatKhauHelper.Hash(model.MatKhauMoi);
+            await _db.SaveChangesAsync();
+            TempData["ThongBao"] = "Đã đặt lại mật khẩu. Bạn có thể đăng nhập ngay.";
+            return RedirectToAction(nameof(Login));
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DangKy(VendorRegisterViewModel model)

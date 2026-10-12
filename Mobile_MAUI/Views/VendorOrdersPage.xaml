@@ -70,7 +70,7 @@
                                                     HeightRequest="38" FontSize="13" Clicked="OnXacNhanClicked" CommandParameter="{Binding .}" />
                                         </Grid>
 
-                                        <Button Text="Đã chuẩn bị xong — bàn giao tài xế" Style="{StaticResource AccentButton}"
+                                        <Button Text="{Binding HanhDongGianHang}" Style="{StaticResource AccentButton}"
                                                 HeightRequest="38" FontSize="13"
                                                 IsVisible="{Binding TrangThai, Converter={StaticResource TrangThaiToDangLamConverter}}"
                                                 Clicked="OnSanSangGiaoClicked" CommandParameter="{Binding .}" />

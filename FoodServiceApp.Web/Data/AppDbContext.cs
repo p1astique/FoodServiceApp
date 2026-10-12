@@ -24,6 +24,10 @@ namespace FoodServiceApp.Web.Data
         public DbSet<DiaChiKhachHang> DiaChiKhachHangs => Set<DiaChiKhachHang>();
         public DbSet<PhanHoi> PhanHois => Set<PhanHoi>();
         public DbSet<TaiXeTuChoiDon> TaiXeTuChoiDons => Set<TaiXeTuChoiDon>();
+        public DbSet<CauHinhGianHang> CauHinhGianHangs => Set<CauHinhGianHang>();
+        public DbSet<ChienDichQuangCao> ChienDichQuangCaos => Set<ChienDichQuangCao>();
+        public DbSet<SuDungKhuyenMai> SuDungKhuyenMais => Set<SuDungKhuyenMai>();
+        public DbSet<NhatKyTrangThaiDon> NhatKyTrangThaiDons => Set<NhatKyTrangThaiDon>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -36,6 +40,20 @@ namespace FoodServiceApp.Web.Data
                 .HasOne(d => d.GianHang)
                 .WithMany(g => g.DanhMucs)
                 .HasForeignKey(d => d.MaGianHang);
+
+            modelBuilder.Entity<CauHinhGianHang>()
+                .HasOne(c => c.GianHang)
+                .WithOne(g => g.CauHinh)
+                .HasForeignKey<CauHinhGianHang>(c => c.MaGianHang);
+
+            modelBuilder.Entity<ChienDichQuangCao>()
+                .HasOne(c => c.GianHang)
+                .WithMany(g => g.ChienDichQuangCaos)
+                .HasForeignKey(c => c.MaGianHang);
+
+            modelBuilder.Entity<ChienDichQuangCao>().Property(c => c.NganSach).HasPrecision(12, 0);
+            modelBuilder.Entity<ChienDichQuangCao>().HasIndex(c => new { c.MaGianHang, c.TrangThai, c.NgayBatDau, c.NgayKetThuc });
+            modelBuilder.Entity<DanhMuc>().HasIndex(c => new { c.MaGianHang, c.ThuTuHienThi });
 
             modelBuilder.Entity<MonAn>()
                 .HasOne(m => m.DanhMuc)
@@ -50,7 +68,18 @@ namespace FoodServiceApp.Web.Data
             modelBuilder.Entity<ChiTietDonHang>()
                 .HasOne(c => c.MonAn)
                 .WithMany()
-                .HasForeignKey(c => c.MaMonAn);
+                .HasForeignKey(c => c.MaMonAn)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<NhatKyTrangThaiDon>()
+                .HasOne(x => x.DonHang).WithMany().HasForeignKey(x => x.MaDonHang).OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<NhatKyTrangThaiDon>().HasIndex(x => new { x.MaDonHang, x.ThoiGian });
+
+            modelBuilder.Entity<DonHang>()
+                .HasMany(d => d.ChiTiets)
+                .WithOne()
+                .HasForeignKey(c => c.MaDonHang)
+                .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<ThanhToan>()
                 .HasOne<DonHang>()
@@ -61,6 +90,13 @@ namespace FoodServiceApp.Web.Data
                 .HasOne<GianHang>()
                 .WithMany(g => g.KhuyenMais)
                 .HasForeignKey(k => k.MaGianHang);
+
+            modelBuilder.Entity<SuDungKhuyenMai>()
+                .HasOne(x => x.KhuyenMai).WithMany().HasForeignKey(x => x.MaKhuyenMai).OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<SuDungKhuyenMai>().HasIndex(x => new { x.MaKhuyenMai, x.MaKH });
+            modelBuilder.Entity<SuDungKhuyenMai>().HasIndex(x => x.MaDonHang).IsUnique();
+            modelBuilder.Entity<KhuyenMai>().Property(x => x.GiaTriDonToiThieu).HasPrecision(12, 0);
+            modelBuilder.Entity<KhuyenMai>().Property(x => x.GiamPhiVanChuyenToiDa).HasPrecision(12, 0);
 
             modelBuilder.Entity<GiaoHang>()
                 .HasOne(g => g.DonHang)

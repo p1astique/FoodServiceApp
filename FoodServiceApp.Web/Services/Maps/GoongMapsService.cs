@@ -17,6 +17,7 @@ namespace FoodServiceApp.Web.Services.Maps
 
         public async Task<GeoPoint?> GeocodeAsync(string address)
         {
+            if (string.IsNullOrWhiteSpace(_settings.ApiKey) || _settings.ApiKey.StartsWith("DIEN_")) return null;
             var url = $"{_settings.BaseUrl}/Geocode?address={Uri.EscapeDataString(address)}&api_key={_settings.ApiKey}";
             using var response = await _httpClient.GetAsync(url);
             if (!response.IsSuccessStatusCode)
@@ -37,6 +38,7 @@ namespace FoodServiceApp.Web.Services.Maps
 
         public async Task<DistanceResult?> GetDistanceAsync(GeoPoint origin, GeoPoint destination)
         {
+            if (string.IsNullOrWhiteSpace(_settings.ApiKey) || _settings.ApiKey.StartsWith("DIEN_")) return null;
             var origins = $"{origin.Lat},{origin.Lng}";
             var destinations = $"{destination.Lat},{destination.Lng}";
             // vehicle=bike phù hợp với giao hàng bằng xe máy trong đô thị

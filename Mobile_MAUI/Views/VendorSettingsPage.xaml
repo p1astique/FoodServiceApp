@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="FoodServiceApp.Maui.Views.VendorSettingsPage" Title="Cấu hình vận hành">
+  <ScrollView><VerticalStackLayout Padding="16" Spacing="12">
+    <Label Text="Giờ nhận đơn" Style="{StaticResource TitleLabel}" />
+    <Grid ColumnDefinitions="*,*" ColumnSpacing="10"><TimePicker x:Name="GioMo" Grid.Column="0" /><TimePicker x:Name="GioDong" Grid.Column="1" /></Grid>
+    <HorizontalStackLayout><Switch x:Name="TuDong" /><Label Text="Tự động nhận đơn theo khung giờ" VerticalOptions="Center" /></HorizontalStackLayout>
+    <Label Text="Thời gian chuẩn bị (phút)" /><Entry x:Name="ThoiGian" Keyboard="Numeric" />
+    <Label Text="Thông báo tới khách" /><Editor x:Name="ThongBao" AutoSize="TextChanges" />
+    <HorizontalStackLayout><Switch x:Name="TamDung" /><Label Text="Tạm dừng nhận đơn" VerticalOptions="Center" /></HorizontalStackLayout>
+    <Label Text="Lý do tạm dừng" /><Entry x:Name="LyDo" />
+    <Button Text="Lưu cấu hình" Style="{StaticResource PrimaryButton}" Clicked="OnSave" />
+  </VerticalStackLayout></ScrollView>
+</ContentPage>

@@ -6,10 +6,11 @@
 }
 
 <div class="topbar">
-    <h2>Doanh thu (30 ngày gần nhất)</h2>
+    <h2>Doanh thu và tài chính</h2>
+    <form method="get" style="display:flex;gap:6px"><a asp-route-ky="ngay" class="btn @(Model.Ky == "ngay" ? "btn-primary" : "btn-outline")">Hôm nay</a><a asp-route-ky="thang" class="btn @(Model.Ky == "thang" ? "btn-primary" : "btn-outline")">Tháng này</a><a asp-route-ky="nam" class="btn @(Model.Ky == "nam" ? "btn-primary" : "btn-outline")">Năm nay</a><a asp-route-ky="30ngay" class="btn @(Model.Ky == "30ngay" ? "btn-primary" : "btn-outline")">30 ngày</a></form>
 </div>
 
-<div class="grid-2 mb-3">
+<div class="grid-4 mb-3">
     <div class="stat-card">
         <div class="label">Tổng doanh thu</div>
         <div class="value">@Model.TongDoanhThu30Ngay.ToString("N0")đ</div>
@@ -18,13 +19,16 @@
         <div class="label">Đơn hoàn thành</div>
         <div class="value">@Model.TongDonHoanThanh30Ngay</div>
     </div>
+    <div class="stat-card" style="background:#D97706"><div class="label">Phí nền tảng (10%)</div><div class="value">@Model.PhiNenTang.ToString("N0")đ</div></div>
+    <div class="stat-card" style="background:var(--success)"><div class="label">Số tiền thực nhận</div><div class="value">@Model.ThucNhan.ToString("N0")đ</div></div>
 </div>
+<div class="text-muted mb-3">Kỳ báo cáo: @Model.TuNgay.ToString("dd/MM/yyyy") – @Model.DenNgay.ToString("dd/MM/yyyy"). Doanh thu không bao gồm phí giao hàng.</div>
 
 <div class="card mb-3">
     <h3 style="margin-top:0;">Doanh thu theo ngày</h3>
     @if (!Model.DoanhThuTheoNgay.Any())
     {
-        <div class="empty-state">Chưa có đơn hàng hoàn thành trong 30 ngày qua.</div>
+        <div class="empty-state">Chưa có đơn hàng hoàn thành trong kỳ đã chọn.</div>
     }
     else
     {

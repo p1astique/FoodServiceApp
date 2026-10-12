@@ -56,6 +56,7 @@ namespace FoodServiceApp.Web.Models.ViewModels
         public string TenMon { get; set; } = "";
         public decimal Gia { get; set; }
         public int SoLuong { get; set; }
+        public string? TuyChonMon { get; set; }
         public string? HinhAnh { get; set; }
     }
 
@@ -83,9 +84,10 @@ namespace FoodServiceApp.Web.Models.ViewModels
         public string HinhThucThanhToan { get; set; } = "TienMat"; // TienMat / VNPay / Momo
 
         public decimal SoTienGiam { get; set; }
+        public decimal GiamPhiGiaoHang { get; set; }
         /// <summary>Phí giao hàng ước tính hiển thị cho khách trước khi đặt — server tính lại chính xác lúc DatHang.</summary>
         public decimal PhiGiaoHangUocTinh { get; set; }
-        public decimal ThanhTien => Math.Max(0, GioHang.TongTien - SoTienGiam) + PhiGiaoHangUocTinh;
+        public decimal ThanhTien => Math.Max(0, GioHang.TongTien - SoTienGiam) + Math.Max(0, PhiGiaoHangUocTinh - GiamPhiGiaoHang);
         public string? LoiThongBao { get; set; }
     }
 

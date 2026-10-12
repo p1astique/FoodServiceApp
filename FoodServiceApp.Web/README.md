@@ -1,3 +1,4 @@
+> **Trạng thái ngày 12/10/2026:** module đối tác MAUI và luồng khách hàng phục vụ tích hợp đã nối Web API + SQL Server. Đã bổ sung danh mục web, phân quyền API, kiểm thử tích hợp và thiết lập quản trị đầu tiên. Hướng dẫn đang dùng: [Bàn giao module Nhật](../docs/NHAT_BAN_GIAO.md). Phần mô tả bên dưới được giữ làm lịch sử; các đoạn nói “chưa có web/csproj”, “toàn bộ dùng mock” hoặc “chưa build” không còn phản ánh phần đã nâng cấp.
 # FoodServiceApp.Web — Chương trình gộp thành 1 project
 
 Đề tài CNTT-KLCN069 — Xây dựng ứng dụng quản lý dịch vụ ăn uống. ASP.NET Core

@@ -37,6 +37,7 @@ namespace FoodServiceApp.Web.Controllers
                 .FirstOrDefaultAsync(d => d.MaDonHang == id && d.MaGianHang == CurrentGianHangId);
 
             if (don == null) return NotFound();
+            ViewBag.NhatKy = await _db.NhatKyTrangThaiDons.Where(x => x.MaDonHang == id).OrderBy(x => x.ThoiGian).ToListAsync();
             return View(don);
         }
 
@@ -44,34 +45,18 @@ namespace FoodServiceApp.Web.Controllers
         //                          ChoXacNhan/DaXacNhan -> DaHuy
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CapNhatTrangThai(int id, string trangThaiMoi)
+        public async Task<IActionResult> CapNhatTrangThai(int id, string trangThaiMoi, string? lyDo)
         {
             var don = await _db.DonHangs.Include(d => d.ThanhToan)
                 .FirstOrDefaultAsync(d => d.MaDonHang == id && d.MaGianHang == CurrentGianHangId);
             if (don == null) return NotFound();
 
-            var chuyenHopLe = new Dictionary<string, string[]>
-            {
-                ["ChoXacNhan"] = new[] { "DaXacNhan", "DaHuy" },
-                ["DaXacNhan"] = new[] { "DaHuy" }, // từ đây trở đi việc bàn giao do tài xế tự nhận đơn
-            };
-
-            if (chuyenHopLe.TryGetValue(don.TrangThai, out var choPhep) && choPhep.Contains(trangThaiMoi))
-            {
-                don.TrangThai = trangThaiMoi;
-
-                // Huỷ đơn đã thanh toán online -> đánh dấu hoàn tiền để Quản trị đối soát
-                if (trangThaiMoi == "DaHuy" && don.ThanhToan != null && don.ThanhToan.TrangThai == "DaThanhToan")
-                    don.ThanhToan.TrangThai = "DaHoanTien";
-
-                await _db.SaveChangesAsync();
-                TempData["ThongBao"] = $"Đã cập nhật đơn #{don.MaDonHang} sang trạng thái mới.";
-            }
+            if (await FoodServiceApp.Web.Services.VendorOrderService.UpdateAsync(_db, CurrentGianHangId, id, trangThaiMoi, lyDo))
+                TempData["ThongBao"] = trangThaiMoi == "DaHuy" && don.ThanhToan?.TrangThai == "DaThanhToan"
+                    ? "Đã hủy đơn. Khoản đã thanh toán cần quản trị đối soát hoàn tiền."
+                    : "Đã cập nhật trạng thái đơn.";
             else
-            {
-                TempData["LoiThongBao"] = "Không thể chuyển sang trạng thái này từ trạng thái hiện tại.";
-            }
-
+                TempData["LoiThongBao"] = "Đơn đã đổi trạng thái hoặc thao tác không hợp lệ. Hãy tải lại.";
             return RedirectToAction("Index");
         }
     }

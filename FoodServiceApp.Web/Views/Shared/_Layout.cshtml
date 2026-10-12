@@ -25,6 +25,7 @@
             </div>
 
             <nav>
+                <a class="nav-item @(currentController == "DanhMuc" ? "active" : "")" asp-controller="DanhMuc" asp-action="Index">📂 Danh mục món</a>
                 <a class="nav-item @(currentController == "Dashboard" ? "active" : "")" asp-controller="Dashboard" asp-action="Index">
                     <span class="icon">🏠</span> Trang chủ
                 </a>
@@ -37,9 +38,17 @@
                 <a class="nav-item @(currentController == "KhuyenMai" ? "active" : "")" asp-controller="KhuyenMai" asp-action="Index">
                     <span class="icon">🏷️</span> Khuyến mãi
                 </a>
+                <a class="nav-item @(currentController == "ChienDichQuangCao" ? "active" : "")" asp-controller="ChienDichQuangCao" asp-action="Index">
+                    <span class="icon">📣</span> Chiến dịch quảng cáo
+                </a>
+                <a class="nav-item @(currentController == "CauHinhGianHang" ? "active" : "")" asp-controller="CauHinhGianHang" asp-action="Index">
+                    <span class="icon">⚙️</span> Cấu hình vận hành
+                </a>
                 <a class="nav-item @(currentController == "DoanhThu" ? "active" : "")" asp-controller="DoanhThu" asp-action="Index">
                     <span class="icon">📈</span> Doanh thu
                 </a>
+                <a class="nav-item @(currentController == "DanhGiaGianHang" ? "active" : "")" asp-controller="DanhGiaGianHang" asp-action="Index"><span class="icon">⭐</span> Đánh giá</a>
+                <a class="nav-item @(currentController == "ThongBaoGianHang" ? "active" : "")" asp-controller="ThongBaoGianHang" asp-action="Index"><span class="icon">🔔</span> Thông báo</a>
                 <a class="nav-item @(currentController == "HoSo" ? "active" : "")" asp-controller="HoSo" asp-action="Index">
                     <span class="icon">🏬</span> Hồ sơ cửa hàng
                 </a>

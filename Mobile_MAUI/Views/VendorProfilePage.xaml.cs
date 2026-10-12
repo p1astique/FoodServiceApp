@@ -1,94 +1,31 @@
+using FoodServiceApp.Maui.Models;
 using FoodServiceApp.Maui.Services;
-
 namespace FoodServiceApp.Maui.Views;
-
 public partial class VendorProfilePage : ContentPage
 {
-    public VendorProfilePage()
-    {
-        InitializeComponent();
-    }
-
-    protected override void OnAppearing()
+    public VendorProfilePage() { InitializeComponent(); }
+    protected override async void OnAppearing()
     {
         base.OnAppearing();
-        NapHoSo();
+        await ApiUi.Run(this, async () => {
+            await VendorWorkspace.LoadAsync(); var g = VendorWorkspace.Store;
+            EntryHinhAnh.Text = g.HinhAnh; LblAnhHienTai.Source = g.ImageUrl;
+            EntryTenGianHang.Text = g.TenGianHang; EntryDiaChi.Text = g.DiaChi;
+            EntrySdt.Text = g.SoDienThoai; EntryEmail.Text = g.Email;
+            EditorMoTa.Text = g.MoTa; SwitchDangMoCua.IsToggled = g.DangMoCua;
+            LblThanhCong.IsVisible = false; LblLoi.IsVisible = false;
+        });
     }
-
-    private void NapHoSo()
+    private async void OnLuuClicked(object sender, EventArgs e)
     {
-        var gh = Models.MockData.GianHangHienTai;
-
-        LblAnhHienTai.Text = gh.HinhAnh;
-        EntryHinhAnh.Text = gh.HinhAnh;
-        EntryTenGianHang.Text = gh.TenGianHang;
-        EntryDiaChi.Text = gh.DiaChi;
-        EntrySdt.Text = gh.SoDienThoai;
-        EntryEmail.Text = gh.Email;
-        EntryThoiGianGiao.Text = gh.ThoiGianGiaoPhut.ToString();
-        EditorMoTa.Text = gh.MoTa;
-        SwitchDangMoCua.IsToggled = gh.DangMoCua;
-
         LblThanhCong.IsVisible = false;
-        LblLoi.IsVisible = false;
-    }
-
-    private void OnLuuClicked(object sender, EventArgs e)
-    {
-        LblLoi.IsVisible = false;
-        LblThanhCong.IsVisible = false;
-
-        if (string.IsNullOrWhiteSpace(EntryTenGianHang.Text))
-        {
-            HienLoi("Vui lòng nhập tên gian hàng");
-            return;
-        }
-        if (string.IsNullOrWhiteSpace(EntryDiaChi.Text))
-        {
-            HienLoi("Vui lòng nhập địa chỉ cửa hàng");
-            return;
-        }
-        if (string.IsNullOrWhiteSpace(EntrySdt.Text))
-        {
-            HienLoi("Vui lòng nhập số điện thoại");
-            return;
-        }
-        if (!int.TryParse(EntryThoiGianGiao.Text, out var thoiGianGiao) || thoiGianGiao <= 0)
-        {
-            HienLoi("Thời gian giao hàng không hợp lệ");
-            return;
-        }
-
-        LoadingIndicator.IsVisible = true;
-        LoadingIndicator.IsRunning = true;
-        BtnLuu.IsEnabled = false;
-
-        try
-        {
-            var gh = Models.MockData.GianHangHienTai;
-            gh.HinhAnh = string.IsNullOrWhiteSpace(EntryHinhAnh.Text) ? gh.HinhAnh : EntryHinhAnh.Text.Trim();
-            gh.TenGianHang = EntryTenGianHang.Text.Trim();
-            gh.DiaChi = EntryDiaChi.Text.Trim();
-            gh.SoDienThoai = EntrySdt.Text.Trim();
-            gh.ThoiGianGiaoPhut = thoiGianGiao;
-            gh.MoTa = EditorMoTa.Text?.Trim() ?? "";
-            gh.DangMoCua = SwitchDangMoCua.IsToggled;
-            VendorLocalStore.Luu();
-
-            LblAnhHienTai.Text = gh.HinhAnh;
+        await ApiUi.Run(this, async () => {
+            if (string.IsNullOrWhiteSpace(EntryTenGianHang.Text) || string.IsNullOrWhiteSpace(EntryDiaChi.Text) || string.IsNullOrWhiteSpace(EntrySdt.Text))
+                throw new InvalidOperationException("Nhập tên, địa chỉ và số điện thoại.");
+            await VendorWorkspace.SaveProfile(new GianHang { TenGianHang = EntryTenGianHang.Text.Trim(),
+                DiaChi = EntryDiaChi.Text.Trim(), SoDienThoai = EntrySdt.Text.Trim(), MoTa = EditorMoTa.Text,
+                HinhAnh = EntryHinhAnh.Text, DangMoCua = SwitchDangMoCua.IsToggled });
             LblThanhCong.IsVisible = true;
-        }
-        finally
-        {
-            LoadingIndicator.IsVisible = false;
-            LoadingIndicator.IsRunning = false;
-            BtnLuu.IsEnabled = true;
-        }
-    }
-
-    private void HienLoi(string thongDiep)
-    {
-        LblLoi.Text = thongDiep;
-        LblLoi.IsVisible = true;
+        });
     }
 }

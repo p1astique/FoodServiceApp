@@ -27,11 +27,26 @@
     </div>
 </div>
 
+<div class="form-group"><label><input asp-for="GiamPhiVanChuyen" /> Giảm phí vận chuyển thay cho giảm tiền món</label></div>
+<div class="grid-3">
+    <div class="form-group"><label asp-for="GiaTriDonToiThieu">Đơn tối thiểu (đ)</label><input asp-for="GiaTriDonToiThieu" type="number" min="0" class="form-control" /></div>
+    <div class="form-group"><label asp-for="SoLuongToiDa">Giới hạn lượt dùng</label><input asp-for="SoLuongToiDa" type="number" min="1" class="form-control" placeholder="Không giới hạn" /></div>
+    <div class="form-group"><label asp-for="GiamPhiVanChuyenToiDa">Giảm phí ship tối đa</label><input asp-for="GiamPhiVanChuyenToiDa" type="number" min="0" class="form-control" placeholder="Trống = miễn toàn bộ" /></div>
+</div>
+<div class="form-group"><label><input asp-for="MoiKhachMotLan" /> Mỗi khách chỉ được sử dụng một lần</label></div>
+
+@if (Model.DanhSachGianHang.Any())
+{
+    <div class="form-group"><label asp-for="MaGianHangApDung">Gian hàng áp dụng</label><select asp-for="MaGianHangApDung" class="form-control" asp-items="@(new SelectList(Model.DanhSachGianHang, "MaGianHang", "TenCuaHang"))"><option value="">— Tất cả gian hàng —</option></select></div>
+}
+
+<div class="form-group"><label asp-for="MaDanhMuc">Danh mục áp dụng</label><select asp-for="MaDanhMuc" class="form-control" asp-items="@(new SelectList(Model.DanhSachDanhMuc, "MaDanhMuc", "TenDanhMuc"))"><option value="">— Không giới hạn danh mục —</option></select></div>
+
 <div class="form-group">
     <label asp-for="MaMonAn">Áp dụng cho món</label>
     <select asp-for="MaMonAn" class="form-control"
             asp-items="@(new SelectList(Model.DanhSachMon, "MaMonAn", "TenMon", Model.MaMonAn))">
-        <option value="">— Cả đơn hàng của gian hàng —</option>
+        <option value="">— Không giới hạn món —</option>
     </select>
     <span asp-validation-for="MaMonAn" class="field-validation-error"></span>
 </div>

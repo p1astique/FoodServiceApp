@@ -44,7 +44,7 @@ namespace FoodServiceApp.Web.Services
             cart.MaGianHang = maGianHang;
             cart.TenGianHang = tenGianHang;
 
-            var monCu = cart.Items.FirstOrDefault(i => i.MaMonAn == monMoi.MaMonAn);
+            var monCu = cart.Items.FirstOrDefault(i => i.MaMonAn == monMoi.MaMonAn && i.TuyChonMon == monMoi.TuyChonMon);
             if (monCu != null)
                 monCu.SoLuong += monMoi.SoLuong;
             else

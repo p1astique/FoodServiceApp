@@ -221,12 +221,14 @@ public partial class AdminStatisticsPage : ContentPage
             hangTren.Children.Add(lblMa);
             hangTren.Children.Add(lblTrangThai);
 
-            var tyLeDung = km.SoLuongToiDa > 0 ? (double)km.SoLuongDaDung / km.SoLuongToiDa : 0;
+            var tyLeDung = km.SoLuongToiDa is > 0 ? (double)km.SoLuongDaDung / km.SoLuongToiDa.Value : 0;
             var lblLuotDung = new Label
             {
                 FontSize = 11.5,
                 TextColor = (Color)Application.Current!.Resources["TextGrey"],
-                Text = $"Đã dùng {km.SoLuongDaDung}/{km.SoLuongToiDa} lượt ({tyLeDung * 100:0.#}%)",
+                Text = km.SoLuongToiDa == null
+                    ? $"Đã dùng {km.SoLuongDaDung} lượt (không giới hạn)"
+                    : $"Đã dùng {km.SoLuongDaDung}/{km.SoLuongToiDa} lượt ({tyLeDung * 100:0.#}%)",
             };
 
             var nenThanh = new BoxView { HeightRequest = 6, CornerRadius = 3, Color = (Color)Application.Current!.Resources["Background"] };

@@ -42,6 +42,13 @@ namespace FoodServiceApp.Web.Controllers.Api
             if (!taiKhoan.TrangThai)
                 return Unauthorized(new { message = "Tài khoản đã bị khoá." });
 
+            if (vaiTro == "GianHang")
+            {
+                var store = await _db.GianHangs.FirstOrDefaultAsync(g => g.MaTK == taiKhoan.MaTK);
+                if (store == null || store.TrangThaiDuyet != "DaDuyet")
+                    return StatusCode(403, new { message = "Gian hàng đang chờ duyệt hoặc đã bị từ chối." });
+            }
+
             string hoTenHienThi = vaiTro switch
             {
                 "GianHang" => (await _db.GianHangs.FirstAsync(g => g.MaTK == taiKhoan.MaTK)).TenCuaHang,

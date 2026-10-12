@@ -1,3 +1,4 @@
+using FoodServiceApp.Maui.Services;
 using FoodServiceApp.Maui.Models;
 
 namespace FoodServiceApp.Maui.Views;
@@ -7,10 +8,13 @@ public partial class TrangChuPage : ContentPage
     public TrangChuPage()
     {
         InitializeComponent();
-        // TODO: thay bằng GET /api/gian-hang?q=&danh_muc= khi có API thật
-        DsGianHang.ItemsSource = MockData.DanhSachGianHang;
     }
 
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+        await ApiUi.Run(this, async () => { DsGianHang.ItemsSource = null; DsGianHang.ItemsSource = await ApiClient.GetAsync<List<GianHang>>("api/catalog/stores", null); });
+    }
     private async void OnGianHangTapped(object sender, EventArgs e)
     {
         if (sender is Frame { GestureRecognizers: [TapGestureRecognizer { CommandParameter: GianHang gh }] })

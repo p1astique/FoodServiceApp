@@ -13,7 +13,7 @@
             <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
                 <Frame Grid.Column="0" WidthRequest="44" HeightRequest="44" CornerRadius="10"
                        BackgroundColor="White" Padding="0">
-                    <Label x:Name="LblIconGianHang" FontSize="22" HorizontalOptions="Center" VerticalOptions="Center" />
+                    <Image x:Name="LblIconGianHang" HeightRequest="48" WidthRequest="48" Aspect="AspectFill" />
                 </Frame>
                 <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
                     <Label x:Name="LblTenGianHang" TextColor="White" FontAttributes="Bold" FontSize="15" />
@@ -28,8 +28,8 @@
                 <DataTemplate x:DataType="models:MonAn">
                     <Frame Style="{StaticResource CardFrame}" Margin="0,0,0,8">
                         <Grid ColumnDefinitions="50,*,Auto" ColumnSpacing="10">
-                            <Label Grid.Column="0" Text="{Binding HinhAnh}" FontSize="26"
-                                   HorizontalOptions="Center" VerticalOptions="Center" />
+                            <Image Grid.Column="0"
+                                   HorizontalOptions="Center" VerticalOptions="Center"  Source="{Binding ImageUrl}" HeightRequest="48" WidthRequest="48" Aspect="AspectFill" />
                             <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
                                 <Label Text="{Binding TenMon}" FontAttributes="Bold" FontSize="14" />
                                 <Label FontSize="13" TextColor="{StaticResource Accent}" FontAttributes="Bold">

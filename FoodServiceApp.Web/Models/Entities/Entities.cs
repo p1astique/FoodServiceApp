@@ -32,6 +32,8 @@ namespace FoodServiceApp.Web.Models.Entities
         public ICollection<DanhMuc> DanhMucs { get; set; } = new List<DanhMuc>();
         public ICollection<DonHang> DonHangs { get; set; } = new List<DonHang>();
         public ICollection<KhuyenMai> KhuyenMais { get; set; } = new List<KhuyenMai>();
+        public ICollection<ChienDichQuangCao> ChienDichQuangCaos { get; set; } = new List<ChienDichQuangCao>();
+        public CauHinhGianHang? CauHinh { get; set; }
     }
 
     [Table("QuanTri")]
@@ -81,8 +83,45 @@ namespace FoodServiceApp.Web.Models.Entities
         public int MaGianHang { get; set; }
         public GianHang? GianHang { get; set; }
         public string TenDanhMuc { get; set; } = "";
+        public string? MoTa { get; set; }
+        public int ThuTuHienThi { get; set; }
+        public bool TrangThai { get; set; } = true;
 
         public ICollection<MonAn> MonAns { get; set; } = new List<MonAn>();
+    }
+
+    [Table("CauHinhGianHang")]
+    public class CauHinhGianHang
+    {
+        [Key, ForeignKey(nameof(GianHang))] public int MaGianHang { get; set; }
+        public GianHang? GianHang { get; set; }
+        public TimeSpan GioMoCua { get; set; } = new(7, 0, 0);
+        public TimeSpan GioDongCua { get; set; } = new(22, 0, 0);
+        public bool TuDongDongMo { get; set; }
+        public bool TamDungNhanDon { get; set; }
+        public string? LyDoTamDung { get; set; }
+        public string? ThongBaoCuaHang { get; set; }
+        public int ThoiGianChuanBiPhut { get; set; } = 20;
+    }
+
+    [Table("ChienDichQuangCao")]
+    public class ChienDichQuangCao
+    {
+        [Key] public int MaChienDich { get; set; }
+        public int MaGianHang { get; set; }
+        public GianHang? GianHang { get; set; }
+        public string TenChienDich { get; set; } = "";
+        public string LoaiViTri { get; set; } = "NoiBat";
+        public string TieuDe { get; set; } = "";
+        public string? NoiDung { get; set; }
+        public string? HinhAnh { get; set; }
+        public DateTime NgayBatDau { get; set; }
+        public DateTime NgayKetThuc { get; set; }
+        public decimal NganSach { get; set; }
+        public string TrangThai { get; set; } = "BanNhap";
+        public int LuotHienThi { get; set; }
+        public int LuotTuongTac { get; set; }
+        public DateTime NgayTao { get; set; } = DateTime.Now;
     }
 
     [Table("MonAn")]
@@ -95,6 +134,9 @@ namespace FoodServiceApp.Web.Models.Entities
         public decimal Gia { get; set; }
         public string? MoTa { get; set; }
         public string? HinhAnh { get; set; }
+        public string? KichCo { get; set; }
+        public string? Topping { get; set; }
+        public string? MucCay { get; set; }
         public string TinhTrang { get; set; } = "ConHang"; // ConHang / HetHang
     }
 
@@ -107,13 +149,14 @@ namespace FoodServiceApp.Web.Models.Entities
         public GianHang? GianHang { get; set; }
         public int? MaTaiXe { get; set; }
         public DateTime NgayDat { get; set; } = DateTime.Now;
-        // ChoXacNhan / DaXacNhan / DangGiao / DaGiao / DaHuy
+        // ChoXacNhan / DaXacNhan / DangChuanBi / SanSangGiao / DangGiao / DaGiao / DaHuy
         public string TrangThai { get; set; } = "ChoXacNhan";
         public decimal TongTien { get; set; }
         /// <summary>Phí giao hàng (tính theo khoảng cách qua Goong Maps, xem CustomerCartController) — toàn bộ khoản này là thu nhập của tài xế khi giao thành công.</summary>
         public decimal PhiGiaoHang { get; set; } = 0;
         public string DiaChiGiaoHang { get; set; } = "";
         public string? GhiChu { get; set; }
+        public string? LyDoHuy { get; set; }
         public int? MaKhuyenMaiApDung { get; set; }
         public KhuyenMai? KhuyenMaiApDung { get; set; }
 
@@ -129,10 +172,26 @@ namespace FoodServiceApp.Web.Models.Entities
         public int MaDonHang { get; set; }
         public int MaMonAn { get; set; }
         public MonAn? MonAn { get; set; }
+        public string TenMon { get; set; } = "";
         public int SoLuong { get; set; }
         public decimal DonGia { get; set; }
+        public string? TuyChonMon { get; set; }
 
         [NotMapped] public decimal ThanhTien => SoLuong * DonGia;
+    }
+
+    [Table("NhatKyTrangThaiDon")]
+    public class NhatKyTrangThaiDon
+    {
+        [Key] public int MaNhatKy { get; set; }
+        public int MaDonHang { get; set; }
+        public DonHang? DonHang { get; set; }
+        public string? TrangThaiCu { get; set; }
+        public string TrangThaiMoi { get; set; } = "";
+        public string LoaiNguoiThucHien { get; set; } = "HeThong";
+        public int? MaNguoiThucHien { get; set; }
+        public string? LyDo { get; set; }
+        public DateTime ThoiGian { get; set; } = DateTime.Now;
     }
 
     [Table("ThanhToan")]
@@ -152,10 +211,18 @@ namespace FoodServiceApp.Web.Models.Entities
         [Key] public int MaKhuyenMai { get; set; }
         public int? MaGianHang { get; set; } // null = áp dụng toàn hệ thống
         public int? MaMonAn { get; set; }    // null = áp dụng cho cả đơn; có giá trị = chỉ giảm trên món này
+        public int? MaDanhMuc { get; set; }
+        public int? MaGianHangApDung { get; set; }
         public string MaCode { get; set; } = "";
         public string? MoTa { get; set; }
         public decimal? PhanTramGiam { get; set; }
         public decimal? SoTienGiam { get; set; }
+        public bool GiamPhiVanChuyen { get; set; }
+        public decimal? GiamPhiVanChuyenToiDa { get; set; }
+        public decimal GiaTriDonToiThieu { get; set; }
+        public int? SoLuongToiDa { get; set; }
+        public int SoLuongDaDung { get; set; }
+        public bool MoiKhachMotLan { get; set; }
         public string? DieuKienApDung { get; set; }
         public DateTime NgayBatDau { get; set; }
         public DateTime NgayKetThuc { get; set; }
@@ -164,6 +231,17 @@ namespace FoodServiceApp.Web.Models.Entities
         [NotMapped] public bool ApDungToanHeThong => MaGianHang == null;
         [NotMapped] public bool ConHan => DateTime.Now <= NgayKetThuc;
         [NotMapped] public bool ChuaBatDau => DateTime.Now < NgayBatDau;
+    }
+
+    [Table("SuDungKhuyenMai")]
+    public class SuDungKhuyenMai
+    {
+        [Key] public int MaSuDung { get; set; }
+        public int MaKhuyenMai { get; set; }
+        public KhuyenMai? KhuyenMai { get; set; }
+        public int MaKH { get; set; }
+        public int MaDonHang { get; set; }
+        public DateTime NgaySuDung { get; set; } = DateTime.Now;
     }
 
     [Table("TaiXeTuChoiDon")]
@@ -184,6 +262,8 @@ namespace FoodServiceApp.Web.Models.Entities
         public int MaDonHang { get; set; }
         public int SoSao { get; set; }
         public string? NoiDung { get; set; }
+        public string? PhanHoiGianHang { get; set; }
+        public DateTime? NgayPhanHoi { get; set; }
         public DateTime NgayDanhGia { get; set; } = DateTime.Now;
     }
 

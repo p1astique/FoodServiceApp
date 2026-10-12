@@ -34,7 +34,7 @@ public partial class AdminVendorListPage : ContentPage
         var action = vendor.TaiKhoanHoatDong ? "khóa" : "mở khóa";
         if (!await DisplayAlert("Xác nhận", $"Bạn muốn {action} tài khoản \"{vendor.TenCuaHang}\"?", "Đồng ý", "Hủy")) return;
 
-        if (!await _api.ToggleLockAsync(vendor.MaGianHang))
+        if (!await SafeAction(() => _api.ToggleLockAsync(vendor.MaGianHang)))
         {
             await DisplayAlert("Không thành công", "Server không thể cập nhật tài khoản.", "OK");
             return;
@@ -47,5 +47,11 @@ public partial class AdminVendorListPage : ContentPage
     {
         try { await NapDanhSachAsync(); }
         finally { RefreshDsGianHang.IsRefreshing = false; }
+    }
+    private async Task<bool> SafeAction(Func<Task<bool>> action)
+    {
+        var success = false;
+        await ApiUi.Run(this, async () => { success = await action(); });
+        return success;
     }
 }

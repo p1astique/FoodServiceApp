@@ -1,0 +1,6 @@
+@{ ViewData["Title"] = "Thông báo"; dynamic orders = ViewBag.Orders; dynamic reviews = ViewBag.Reviews; }
+<div class="topbar"><div><h2>Thông báo 30 ngày gần đây</h2><div class="text-muted">Đơn mới, đơn hủy và đánh giá mới.</div></div></div>
+<div class="grid-2">
+<div class="card"><h3>Đơn hàng</h3>@foreach (var x in orders) { <div class="review-row"><a asp-controller="DonHang" asp-action="ChiTiet" asp-route-id="@x.MaDonHang"><strong>Đơn #@x.MaDonHang</strong></a> · @(x.TrangThai == "DaHuy" ? "Đã hủy" : x.TrangThai == "ChoXacNhan" ? "Đơn mới cần xác nhận" : x.TrangThai)<div class="text-muted" style="font-size:12px">@x.Ngay.ToString("HH:mm dd/MM/yyyy")</div></div> }</div>
+<div class="card"><h3>Đánh giá mới</h3>@foreach (var x in reviews) { <div class="review-row"><strong>@x.SoSao ⭐ cho đơn #@x.MaDonHang</strong><div class="text-muted" style="font-size:12px">@x.Ngay.ToString("HH:mm dd/MM/yyyy")</div></div> }</div>
+</div>

@@ -23,7 +23,7 @@ namespace FoodServiceApp.Web.Controllers.Api
         private static DonHangDto MapDonHang(DonHang d) => new(
             d.MaDonHang, d.TrangThai, d.TongTien, d.NgayDat, d.DiaChiGiaoHang, d.GhiChu,
             d.GianHang!.TenCuaHang, d.GianHang.DiaChi,
-            d.ChiTiets.Select(c => new ChiTietDonHangDto(c.MonAn!.TenMon, c.SoLuong, c.DonGia, c.ThanhTien)).ToList(),
+            d.ChiTiets.Select(c => new ChiTietDonHangDto(c.TenMon, c.SoLuong, c.DonGia, c.ThanhTien, c.TuyChonMon)).ToList(),
             d.PhiGiaoHang);
 
         [HttpGet("home")]
@@ -36,7 +36,7 @@ namespace FoodServiceApp.Web.Controllers.Api
             var donDangGiao = await _db.DonHangs
                 .Include(d => d.GianHang)
                 .Include(d => d.ChiTiets).ThenInclude(c => c.MonAn)
-                .FirstOrDefaultAsync(d => d.MaTaiXe == maTaiXe && d.TrangThai == "DangGiao");
+                .FirstOrDefaultAsync(d => d.MaTaiXe == maTaiXe && (d.TrangThai == "TaiXeDaNhan" || d.TrangThai == "DangGiao"));
 
             var thuNhapHomNay = await _db.GiaoHangs
                 .Include(g => g.DonHang)
@@ -48,7 +48,7 @@ namespace FoodServiceApp.Web.Controllers.Api
                 await _db.GiaoHangs.CountAsync(g => g.MaTaiXe == maTaiXe && g.TrangThai == "GiaoThanhCong" && g.ThoiGianGiao >= homNay),
                 thuNhapHomNay,
                 donDangGiao == null ? null : MapDonHang(donDangGiao),
-                await _db.DonHangs.CountAsync(d => d.TrangThai == "DaXacNhan" && d.MaTaiXe == null)
+                await _db.DonHangs.CountAsync(d => d.TrangThai == "SanSangGiao" && d.MaTaiXe == null)
             ));
         }
 
@@ -71,7 +71,7 @@ namespace FoodServiceApp.Web.Controllers.Api
             var donHangs = await _db.DonHangs
                 .Include(d => d.GianHang)
                 .Include(d => d.ChiTiets).ThenInclude(c => c.MonAn)
-                .Where(d => d.TrangThai == "DaXacNhan" && d.MaTaiXe == null)
+                .Where(d => d.TrangThai == "SanSangGiao" && d.MaTaiXe == null)
                 .OrderBy(d => d.NgayDat)
                 .ToListAsync();
 
@@ -83,18 +83,21 @@ namespace FoodServiceApp.Web.Controllers.Api
         {
             var maTaiXe = await GetMaTaiXeAsync();
 
-            var dangGiao = await _db.DonHangs.AnyAsync(d => d.MaTaiXe == maTaiXe && d.TrangThai == "DangGiao");
+            var dangGiao = await _db.DonHangs.AnyAsync(d => d.MaTaiXe == maTaiXe && (d.TrangThai == "TaiXeDaNhan" || d.TrangThai == "DangGiao"));
             if (dangGiao) return BadRequest(new { message = "Bạn đang có chuyến giao chưa hoàn thành." });
 
-            var don = await _db.DonHangs.FirstOrDefaultAsync(d => d.MaDonHang == id && d.TrangThai == "DaXacNhan" && d.MaTaiXe == null);
+            var don = await _db.DonHangs.FirstOrDefaultAsync(d => d.MaDonHang == id && d.TrangThai == "SanSangGiao" && d.MaTaiXe == null);
             if (don == null) return Conflict(new { message = "Đơn đã có tài xế khác nhận." });
 
             don.MaTaiXe = maTaiXe;
-            don.TrangThai = "DangGiao";
+            don.TrangThai = "TaiXeDaNhan";
             _db.GiaoHangs.Add(new GiaoHang { MaDonHang = id, MaTaiXe = maTaiXe, TrangThai = "DaNhan", ThoiGianNhan = DateTime.Now });
 
             var taiXe = await _db.TaiXes.FirstAsync(t => t.MaTaiXe == maTaiXe);
             taiXe.TrangThai = "DangGiao";
+
+            _db.NhatKyTrangThaiDons.Add(new NhatKyTrangThaiDon { MaDonHang = id, TrangThaiCu = "SanSangGiao",
+                TrangThaiMoi = "TaiXeDaNhan", LoaiNguoiThucHien = "TaiXe", MaNguoiThucHien = maTaiXe });
 
             await _db.SaveChangesAsync();
             return Ok(new { message = "Đã nhận đơn." });
@@ -108,6 +111,11 @@ namespace FoodServiceApp.Web.Controllers.Api
             if (giaoHang == null) return NotFound();
 
             giaoHang.TrangThai = "DangGiao";
+            var don = await _db.DonHangs.FirstAsync(d => d.MaDonHang == id && d.MaTaiXe == maTaiXe);
+            if (don.TrangThai != "TaiXeDaNhan") return Conflict(new { message = "Đơn không ở trạng thái đã nhận." });
+            don.TrangThai = "DangGiao";
+            _db.NhatKyTrangThaiDons.Add(new NhatKyTrangThaiDon { MaDonHang = id, TrangThaiCu = "TaiXeDaNhan",
+                TrangThaiMoi = "DangGiao", LoaiNguoiThucHien = "TaiXe", MaNguoiThucHien = maTaiXe });
             await _db.SaveChangesAsync();
             return Ok(new { giaoHang.TrangThai });
         }
@@ -126,6 +134,9 @@ namespace FoodServiceApp.Web.Controllers.Api
 
             var taiXe = await _db.TaiXes.FirstAsync(t => t.MaTaiXe == maTaiXe);
             taiXe.TrangThai = "SanSang";
+
+            _db.NhatKyTrangThaiDons.Add(new NhatKyTrangThaiDon { MaDonHang = id, TrangThaiCu = "DangGiao",
+                TrangThaiMoi = "DaGiao", LoaiNguoiThucHien = "TaiXe", MaNguoiThucHien = maTaiXe });
 
             await _db.SaveChangesAsync();
             return Ok(new { message = "Hoàn thành giao hàng." });

@@ -43,7 +43,7 @@ namespace FoodServiceApp.Web.Controllers
         public async Task<IActionResult> Create(MonAnFormViewModel vm)
         {
             // Cho phép tạo danh mục mới ngay trong form nếu người dùng nhập TenDanhMucMoi
-            if (vm.MaDanhMuc == 0 && !string.IsNullOrWhiteSpace(vm.TenDanhMucMoi))
+            if (ModelState.IsValid && vm.MaDanhMuc == 0 && !string.IsNullOrWhiteSpace(vm.TenDanhMucMoi))
             {
                 var danhMucMoi = new DanhMuc { MaGianHang = CurrentGianHangId, TenDanhMuc = vm.TenDanhMucMoi.Trim() };
                 _db.DanhMucs.Add(danhMucMoi);
@@ -54,6 +54,8 @@ namespace FoodServiceApp.Web.Controllers
             if (vm.MaDanhMuc == 0)
                 ModelState.AddModelError(nameof(vm.MaDanhMuc), "Vui lòng chọn hoặc nhập danh mục.");
 
+            if (!await _db.DanhMucs.AnyAsync(d => d.MaDanhMuc == vm.MaDanhMuc && d.MaGianHang == CurrentGianHangId))
+                ModelState.AddModelError(nameof(vm.MaDanhMuc), "Danh mục không thuộc gian hàng của bạn.");
             if (!ModelState.IsValid)
             {
                 vm.DanhSachDanhMuc = await _db.DanhMucs.Where(d => d.MaGianHang == CurrentGianHangId).ToListAsync();
@@ -66,6 +68,9 @@ namespace FoodServiceApp.Web.Controllers
                 TenMon = vm.TenMon,
                 Gia = vm.Gia,
                 MoTa = vm.MoTa,
+                KichCo = vm.KichCo,
+                Topping = vm.Topping,
+                MucCay = vm.MucCay,
                 TinhTrang = vm.ConHang ? "ConHang" : "HetHang",
             };
 
@@ -92,6 +97,9 @@ namespace FoodServiceApp.Web.Controllers
                 TenMon = monAn.TenMon,
                 Gia = monAn.Gia,
                 MoTa = monAn.MoTa,
+                KichCo = monAn.KichCo,
+                Topping = monAn.Topping,
+                MucCay = monAn.MucCay,
                 HinhAnhHienTai = monAn.HinhAnh,
                 ConHang = monAn.TinhTrang == "ConHang",
                 DanhSachDanhMuc = await _db.DanhMucs.Where(d => d.MaGianHang == CurrentGianHangId).ToListAsync()
@@ -107,6 +115,20 @@ namespace FoodServiceApp.Web.Controllers
                 .FirstOrDefaultAsync(m => m.MaMonAn == id && m.DanhMuc!.MaGianHang == CurrentGianHangId);
             if (monAn == null) return NotFound();
 
+            if (ModelState.IsValid && vm.MaDanhMuc == 0 && !string.IsNullOrWhiteSpace(vm.TenDanhMucMoi))
+            {
+                var name = vm.TenDanhMucMoi.Trim();
+                var category = await _db.DanhMucs.FirstOrDefaultAsync(d => d.MaGianHang == CurrentGianHangId && d.TenDanhMuc == name);
+                if (category == null)
+                {
+                    category = new DanhMuc { MaGianHang = CurrentGianHangId, TenDanhMuc = name };
+                    _db.DanhMucs.Add(category);
+                    await _db.SaveChangesAsync();
+                }
+                vm.MaDanhMuc = category.MaDanhMuc;
+            }
+            if (!await _db.DanhMucs.AnyAsync(d => d.MaDanhMuc == vm.MaDanhMuc && d.MaGianHang == CurrentGianHangId))
+                ModelState.AddModelError(nameof(vm.MaDanhMuc), "Danh mục không thuộc gian hàng của bạn.");
             if (!ModelState.IsValid)
             {
                 vm.DanhSachDanhMuc = await _db.DanhMucs.Where(d => d.MaGianHang == CurrentGianHangId).ToListAsync();
@@ -116,6 +138,9 @@ namespace FoodServiceApp.Web.Controllers
             monAn.TenMon = vm.TenMon;
             monAn.Gia = vm.Gia;
             monAn.MoTa = vm.MoTa;
+            monAn.KichCo = vm.KichCo;
+            monAn.Topping = vm.Topping;
+            monAn.MucCay = vm.MucCay;
             monAn.TinhTrang = vm.ConHang ? "ConHang" : "HetHang";
             if (vm.MaDanhMuc != 0) monAn.MaDanhMuc = vm.MaDanhMuc;
 

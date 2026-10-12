@@ -7,7 +7,7 @@ namespace FoodServiceApp.Web.Controllers.Api;
 
 [ApiController]
 [Route("api/admin/vendors")]
-public class AdminVendorController : ControllerBase
+public class AdminVendorController : AdminApiBaseController
 {
     private readonly AppDbContext _db;
     public AdminVendorController(AppDbContext db) => _db = db;

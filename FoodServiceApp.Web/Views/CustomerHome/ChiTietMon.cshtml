@@ -46,13 +46,17 @@
 
         @if (Model.Mon.TinhTrang == "ConHang")
         {
-            <form asp-action="ThemVaoGio" asp-route-maGianHang="@Model.GianHang.MaGianHang" method="post" style="display:flex; gap:10px; align-items:center; margin-top:14px;">
+            <form asp-action="ThemVaoGio" asp-route-maGianHang="@Model.GianHang.MaGianHang" method="post" style="margin-top:14px;">
                 @Html.AntiForgeryToken()
                 <input type="hidden" name="maMonAn" value="@Model.Mon.MaMonAn" />
                 <input type="hidden" name="veTrangMon" value="true" />
-                <label style="margin:0;">Số lượng</label>
-                <input type="number" name="soLuong" value="1" min="1" max="20" class="form-control" style="width:90px;" />
-                <button type="submit" class="btn btn-primary">🛒 Thêm vào giỏ hàng</button>
+                <div class="grid-3">
+                @if (!string.IsNullOrWhiteSpace(Model.Mon.KichCo)) { <div class="form-group"><label>Kích cỡ</label><select name="kichCo" class="form-control">@foreach (var x in Model.Mon.KichCo.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)) { <option value="@x">@x</option> }</select></div> }
+                @if (!string.IsNullOrWhiteSpace(Model.Mon.Topping)) { <div class="form-group"><label>Topping</label><select name="topping" class="form-control"><option value="">Không chọn</option>@foreach (var x in Model.Mon.Topping.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)) { <option value="@x">@x</option> }</select></div> }
+                @if (!string.IsNullOrWhiteSpace(Model.Mon.MucCay)) { <div class="form-group"><label>Mức cay</label><select name="mucCay" class="form-control">@foreach (var x in Model.Mon.MucCay.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)) { <option value="@x">@x</option> }</select></div> }
+                </div>
+                <div class="form-group"><label>Ghi chú riêng cho món</label><input name="ghiChuMon" maxlength="150" class="form-control" placeholder="Ví dụ: không hành" /></div>
+                <div style="display:flex;gap:10px;align-items:center"><label>Số lượng</label><input type="number" name="soLuong" value="1" min="1" max="20" class="form-control" style="width:90px;" /><button type="submit" class="btn btn-primary">🛒 Thêm vào giỏ hàng</button></div>
             </form>
         }
         else

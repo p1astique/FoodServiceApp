@@ -10,9 +10,6 @@
             <Label Text="Mã khuyến mãi (khách hàng nhập khi thanh toán) *" FontSize="13" FontAttributes="Bold" />
             <Entry x:Name="EntryMaCode" Placeholder="VD: COMTAM10K" />
 
-            <Label Text="Tên chương trình *" FontSize="13" FontAttributes="Bold" />
-            <Entry x:Name="EntryTenChuongTrinh" Placeholder="VD: Ưu đãi khách quen" />
-
             <Label Text="Mô tả" FontSize="13" FontAttributes="Bold" />
             <Editor x:Name="EditorMoTa" HeightRequest="70" BackgroundColor="White" />
 
@@ -22,6 +19,7 @@
                     <x:Array Type="{x:Type x:String}">
                         <x:String>Giảm theo %</x:String>
                         <x:String>Giảm số tiền cố định</x:String>
+                        <x:String>Giảm phí vận chuyển</x:String>
                     </x:Array>
                 </Picker.ItemsSource>
             </Picker>
@@ -29,15 +27,13 @@
             <Label x:Name="LblNhanGiaTri" Text="Giá trị giảm (%) *" FontSize="13" FontAttributes="Bold" />
             <Entry x:Name="EntryGiaTriGiam" Placeholder="VD: 20" Keyboard="Numeric" />
 
-            <Label x:Name="LblGiamToiDa" Text="Giảm tối đa (đ) — chỉ áp dụng cho giảm theo %" FontSize="13" FontAttributes="Bold" />
-            <Entry x:Name="EntryGiamToiDa" Placeholder="Để trống nếu không giới hạn" Keyboard="Numeric" />
+            <Label Text="Đơn hàng tối thiểu" /><Entry x:Name="EntryDonToiThieu" Keyboard="Numeric" Placeholder="0" />
+            <Label Text="Giới hạn lượt sử dụng (để trống = không giới hạn)" /><Entry x:Name="EntrySoLuongToiDa" Keyboard="Numeric" />
+            <Label Text="Mức giảm phí vận chuyển tối đa" /><Entry x:Name="EntryGiamPhiToiDa" Keyboard="Numeric" />
+            <Grid ColumnDefinitions="*,Auto"><Label Text="Mỗi khách chỉ dùng một lần" VerticalOptions="Center"/><Switch Grid.Column="1" x:Name="SwitchMoiKhachMotLan" /></Grid>
 
-            <Label Text="Giá trị đơn hàng tối thiểu (đ)" FontSize="13" FontAttributes="Bold" />
-            <Entry x:Name="EntryDonToiThieu" Placeholder="VD: 30000" Keyboard="Numeric" />
-
-            <Label Text="Số lượt sử dụng tối đa *" FontSize="13" FontAttributes="Bold" />
-            <Entry x:Name="EntrySoLuongToiDa" Placeholder="VD: 200" Keyboard="Numeric" />
-
+            <Label Text="Danh mục áp dụng" /><Picker x:Name="PickerDanhMuc" />
+            <Label Text="Món áp dụng" /><Picker x:Name="PickerMon" />
             <Label Text="Ngày bắt đầu *" FontSize="13" FontAttributes="Bold" />
             <DatePicker x:Name="DateBatDau" />
 

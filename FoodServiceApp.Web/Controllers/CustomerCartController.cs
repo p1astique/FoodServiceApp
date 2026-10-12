@@ -120,6 +120,18 @@ namespace FoodServiceApp.Web.Controllers
             if (gianHang.TrangThaiKinhDoanh != "DangMo")
                 return $"Gian hàng \"{gianHang.TenCuaHang}\" hiện đã đóng hoặc tạm ngưng nhận đơn.";
 
+            var settings = await _db.CauHinhGianHangs.FindAsync(gioHang.MaGianHang);
+            if (settings?.TamDungNhanDon == true)
+                return settings.LyDoTamDung ?? "Gian hàng đang tạm dừng nhận đơn.";
+            if (settings?.TuDongDongMo == true)
+            {
+                var time = DateTime.Now.TimeOfDay;
+                var open = settings.GioMoCua < settings.GioDongCua
+                    ? time >= settings.GioMoCua && time < settings.GioDongCua
+                    : time >= settings.GioMoCua || time < settings.GioDongCua;
+                if (!open) return $"Gian hàng chỉ nhận đơn từ {settings.GioMoCua:hh\\:mm} đến {settings.GioDongCua:hh\\:mm}.";
+            }
+
             var ids = gioHang.Items.Select(i => i.MaMonAn).Distinct().ToList();
             var mons = await _db.MonAns.Include(m => m.DanhMuc)
                 .Where(m => ids.Contains(m.MaMonAn))
@@ -128,7 +140,7 @@ namespace FoodServiceApp.Web.Controllers
             var daXoa = new List<string>();
             foreach (var item in gioHang.Items.ToList())
             {
-                if (!mons.TryGetValue(item.MaMonAn, out var mon) || mon.DanhMuc?.MaGianHang != gioHang.MaGianHang)
+                if (!mons.TryGetValue(item.MaMonAn, out var mon) || mon.DanhMuc?.MaGianHang != gioHang.MaGianHang || !mon.DanhMuc.TrangThai)
                 {
                     _cart.CapNhatSoLuong(item.MaMonAn, 0);
                     daXoa.Add(item.TenMon);
@@ -219,20 +231,19 @@ namespace FoodServiceApp.Web.Controllers
 
             if (!string.IsNullOrWhiteSpace(model.MaKhuyenMai))
             {
-                var km = await _db.KhuyenMais.FirstOrDefaultAsync(k =>
-                    k.MaCode == model.MaKhuyenMai.Trim().ToUpper() && k.TrangThai &&
-                    (k.MaGianHang == null || k.MaGianHang == model.GioHang.MaGianHang) &&
-                    DateTime.Now >= k.NgayBatDau && DateTime.Now <= k.NgayKetThuc);
+                var km = await _db.KhuyenMais.FirstOrDefaultAsync(k => k.MaCode == model.MaKhuyenMai.Trim().ToUpper());
 
                 if (km == null)
                 {
-                    model.LoiThongBao = "Mã khuyến mãi không hợp lệ, đã hết hạn, hoặc không áp dụng cho gian hàng này.";
+                    model.LoiThongBao = "Mã khuyến mãi không tồn tại.";
                     model.SoTienGiam = 0;
                 }
                 else
                 {
-                    model.SoTienGiam = KhuyenMaiHelper.TinhGiam(km, model.GioHang, out var loiKm);
-                    if (loiKm != null) model.LoiThongBao = loiKm;
+                    var result = await KhuyenMaiHelper.KiemTraAsync(_db, km, model.GioHang, model.GioHang.MaGianHang,
+                        int.Parse(User.FindFirst("MaKH")!.Value), model.PhiGiaoHangUocTinh);
+                    model.SoTienGiam = result.GiamTienMon; model.GiamPhiGiaoHang = result.GiamPhiGiaoHang;
+                    if (!result.HopLe) model.LoiThongBao = result.Loi;
                 }
             }
             else
@@ -282,26 +293,19 @@ namespace FoodServiceApp.Web.Controllers
 
             var maKH = int.Parse(User.FindFirst("MaKH")!.Value);
 
-            decimal soTienGiam = 0;
-            int? maKhuyenMaiApDung = null;
-            if (!string.IsNullOrWhiteSpace(model.MaKhuyenMai))
-            {
-                var km = await _db.KhuyenMais.FirstOrDefaultAsync(k =>
-                    k.MaCode == model.MaKhuyenMai.Trim().ToUpper() && k.TrangThai &&
-                    (k.MaGianHang == null || k.MaGianHang == gioHang.MaGianHang) &&
-                    DateTime.Now >= k.NgayBatDau && DateTime.Now <= k.NgayKetThuc);
-                if (km != null)
-                {
-                    soTienGiam = KhuyenMaiHelper.TinhGiam(km, gioHang, out var loiKm);
-                    if (soTienGiam > 0) maKhuyenMaiApDung = km.MaKhuyenMai;
-                }
-            }
-
-            var tongTienMon = Math.Max(0, gioHang.TongTien - soTienGiam);
-
             var gianHang = await _db.GianHangs.FirstAsync(g => g.MaGianHang == gioHang.MaGianHang);
             var phiGiaoHang = await TinhPhiGiaoHangAsync(gianHang.DiaChi, model.DiaChiGiaoHang);
-            var tongTien = tongTienMon + phiGiaoHang;
+            await using var tx = await _db.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
+            decimal soTienGiam = 0, giamPhiGiao = 0; KhuyenMai? km = null;
+            if (!string.IsNullOrWhiteSpace(model.MaKhuyenMai))
+            {
+                km = await _db.KhuyenMais.FirstOrDefaultAsync(x => x.MaCode == model.MaKhuyenMai.Trim().ToUpper());
+                if (km == null) { model.GioHang = gioHang; model.LoiThongBao = "Mã khuyến mãi không tồn tại."; await NapDiaChiAsync(); return View("Checkout", model); }
+                var result = await KhuyenMaiHelper.KiemTraAsync(_db, km, gioHang, gioHang.MaGianHang, maKH, phiGiaoHang);
+                if (!result.HopLe) { model.GioHang = gioHang; model.LoiThongBao = result.Loi; await NapDiaChiAsync(); return View("Checkout", model); }
+                soTienGiam = result.GiamTienMon; giamPhiGiao = result.GiamPhiGiaoHang;
+            }
+            var tongTien = Math.Max(0, gioHang.TongTien - soTienGiam) + Math.Max(0, phiGiaoHang - giamPhiGiao);
 
             var donHang = new DonHang
             {
@@ -312,7 +316,7 @@ namespace FoodServiceApp.Web.Controllers
                 PhiGiaoHang = phiGiaoHang,
                 DiaChiGiaoHang = model.DiaChiGiaoHang,
                 GhiChu = model.GhiChu,
-                MaKhuyenMaiApDung = maKhuyenMaiApDung,
+                MaKhuyenMaiApDung = km?.MaKhuyenMai,
             };
             _db.DonHangs.Add(donHang);
             await _db.SaveChangesAsync();
@@ -323,8 +327,10 @@ namespace FoodServiceApp.Web.Controllers
                 {
                     MaDonHang = donHang.MaDonHang,
                     MaMonAn = item.MaMonAn,
+                    TenMon = item.TenMon,
                     SoLuong = item.SoLuong,
                     DonGia = item.Gia,
+                    TuyChonMon = item.TuyChonMon,
                 });
             }
 
@@ -335,7 +341,14 @@ namespace FoodServiceApp.Web.Controllers
                 TrangThai = model.HinhThucThanhToan == "TienMat" ? "ChoThanhToan" : "ChoThanhToan",
             });
 
+            if (km != null)
+            {
+                km.SoLuongDaDung++;
+                _db.SuDungKhuyenMais.Add(new SuDungKhuyenMai { MaKhuyenMai = km.MaKhuyenMai, MaKH = maKH, MaDonHang = donHang.MaDonHang });
+            }
+
             await _db.SaveChangesAsync();
+            await tx.CommitAsync();
             _cart.XoaGioHang();
 
             if (model.HinhThucThanhToan == "VNPay")

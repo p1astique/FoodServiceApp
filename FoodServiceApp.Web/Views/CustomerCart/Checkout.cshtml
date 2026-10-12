@@ -114,6 +114,10 @@
                 <span>Phí giao hàng</span>
                 <span id="gia-tri-phi-giao">@(Model.PhiGiaoHangUocTinh > 0 ? Model.PhiGiaoHangUocTinh.ToString("N0") + "đ" : "Nhập địa chỉ để xem phí")</span>
             </div>
+            @if (Model.GiamPhiGiaoHang > 0)
+            {
+                <div class="checkout-item-row" style="color:var(--success);"><span>Giảm phí giao hàng</span><span>-@Model.GiamPhiGiaoHang.ToString("N0")đ</span></div>
+            }
             <div class="checkout-item-row" style="font-weight:800; font-size:16px; color:var(--primary); margin-top:6px;">
                 <span>Thành tiền</span><span id="gia-tri-thanh-tien">@Model.ThanhTien.ToString("N0")đ</span>
             </div>
@@ -132,7 +136,8 @@
             var elPhi = document.getElementById('gia-tri-phi-giao');
             var elThanhTien = document.getElementById('gia-tri-thanh-tien');
             var nutDatHang = document.getElementById('nut-dat-hang');
-            var tamTinhSauGiam = @Html.Raw((Model.GioHang.TongTien - Model.SoTienGiam).ToString("F0"));
+            var tamTinhSauGiamMon = @Html.Raw((Model.GioHang.TongTien - Model.SoTienGiam).ToString("F0"));
+            var giamPhiVoucher = @Html.Raw(Model.GiamPhiGiaoHang.ToString("F0"));
             var timer = null;
 
             function dinhDangTien(so) {
@@ -157,7 +162,7 @@
                     .then(function (data) {
                         var phi = data.phiGiaoHang || 0;
                         elPhi.textContent = dinhDangTien(phi);
-                        var thanhTien = tamTinhSauGiam + phi;
+                        var thanhTien = tamTinhSauGiamMon + phi - Math.min(phi, giamPhiVoucher);
                         elThanhTien.textContent = dinhDangTien(thanhTien);
                         nutDatHang.textContent = 'Đặt hàng — ' + dinhDangTien(thanhTien);
                     })

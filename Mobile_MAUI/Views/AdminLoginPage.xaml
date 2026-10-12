@@ -17,7 +17,7 @@
             <Label Text="Đăng nhập để giám sát gian hàng, tài khoản và hoạt động kinh doanh"
                    Style="{StaticResource SubtitleLabel}" HorizontalOptions="Center" Margin="0,0,0,10" />
 
-            <Entry x:Name="EntryEmail" Placeholder="Email quản trị viên" Keyboard="Email" />
+            <Entry x:Name="EntryEmail" Placeholder="Tên đăng nhập" Keyboard="Default" />
             <Entry x:Name="EntryMatKhau" Placeholder="Mật khẩu" IsPassword="True" />
 
             <ActivityIndicator x:Name="LoadingIndicator" IsRunning="False" IsVisible="False"
@@ -36,6 +36,6 @@
                 </Label.GestureRecognizers>
             </Label>
 
-        </VerticalStackLayout>
+        <Button Text="Cấu hình máy chủ" Clicked="OnConfigureServerClicked" BackgroundColor="Transparent" TextColor="{StaticResource Primary}" /></VerticalStackLayout>
     </ScrollView>
 </ContentPage>

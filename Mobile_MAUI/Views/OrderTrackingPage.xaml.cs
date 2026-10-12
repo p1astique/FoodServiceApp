@@ -1,3 +1,4 @@
+using FoodServiceApp.Maui.Services;
 using FoodServiceApp.Maui.Models;
 
 namespace FoodServiceApp.Maui.Views;
@@ -9,16 +10,25 @@ public partial class OrderTrackingPage : ContentPage
         InitializeComponent();
     }
 
-    protected override void OnAppearing()
+    protected override async void OnAppearing()
     {
         base.OnAppearing();
-        TaiDuLieu();
+        await ApiUi.Run(this, async () => {
+            DsLichSu.ItemsSource = null; KhungDangGiao.IsVisible = false;
+            var orders = await ApiClient.GetAsync<List<VendorWorkspace.OrderDto>>("api/customer/orders", "KhachHang");
+            _orders = orders.Select(o => new DonHang { Id = o.MaDonHang.ToString(), TenGianHang = o.TenGianHang,
+                TongTienServer = o.TongTien, NgayDat = o.NgayDat, DiaChiGiao = o.DiaChiGiaoHang,
+                TrangThai = o.TrangThai switch { "DaXacNhan" or "DangChuanBi" => TrangThaiDonHang.DangLam, "SanSangGiao" or "TaiXeDaNhan" or "DangGiao" => TrangThaiDonHang.DangGiao,
+                    "DaGiao" => TrangThaiDonHang.HoanThanh, "DaHuy" => TrangThaiDonHang.DaHuy, _ => TrangThaiDonHang.ChoXacNhan },
+                ChiTiet = o.ChiTiet.Select(c => new MucGioHang { MonAn = new MonAn { TenMon = c.TenMon, Gia = c.DonGia }, SoLuong = c.SoLuong }).ToList()
+            }).ToList(); TaiDuLieu();
+        });
     }
 
+    private List<DonHang> _orders = new();
     private void TaiDuLieu()
     {
-        // TODO: thay bằng GET /api/don-hang?trang_thai= khi có API thật
-        var donDangXuLy = MockData.LichSuDonHang.FirstOrDefault(d =>
+        var donDangXuLy = _orders.FirstOrDefault(d =>
             d.TrangThai is TrangThaiDonHang.ChoXacNhan or TrangThaiDonHang.DangLam or TrangThaiDonHang.DangGiao);
 
         if (donDangXuLy is not null)
@@ -34,7 +44,7 @@ public partial class OrderTrackingPage : ContentPage
             KhungDangGiao.IsVisible = false;
         }
 
-        DsLichSu.ItemsSource = MockData.LichSuDonHang
+        DsLichSu.ItemsSource = _orders
             .Where(d => d != donDangXuLy)
             .ToList();
     }

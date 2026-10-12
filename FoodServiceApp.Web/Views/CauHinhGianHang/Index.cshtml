@@ -1,0 +1,16 @@
+@model FoodServiceApp.Web.Models.Dtos.StoreSettingsRequest
+@{ ViewData["Title"] = "Cấu hình vận hành"; }
+<div class="topbar"><div><h2>Cấu hình vận hành</h2><div class="text-muted">Quản lý thời gian nhận đơn và thông báo tới khách hàng.</div></div></div>
+<form method="post" class="card" style="max-width:760px">
+    <div asp-validation-summary="ModelOnly"></div>
+    <div class="grid-2">
+        <div class="form-group"><label asp-for="GioMoCua">Giờ mở cửa</label><input asp-for="GioMoCua" type="time" class="form-control" /></div>
+        <div class="form-group"><label asp-for="GioDongCua">Giờ đóng cửa</label><input asp-for="GioDongCua" type="time" class="form-control" /></div>
+    </div>
+    <div class="form-group"><label><input asp-for="TuDongDongMo" /> Tự động nhận đơn theo khung giờ trên</label></div>
+    <div class="form-group"><label asp-for="ThoiGianChuanBiPhut">Thời gian chuẩn bị dự kiến (phút)</label><input asp-for="ThoiGianChuanBiPhut" type="number" min="5" max="180" class="form-control" /></div>
+    <div class="form-group"><label asp-for="ThongBaoCuaHang">Thông báo cửa hàng</label><textarea asp-for="ThongBaoCuaHang" class="form-control" maxlength="300"></textarea></div>
+    <div class="form-group"><label><input asp-for="TamDungNhanDon" /> Tạm dừng nhận đơn</label></div>
+    <div class="form-group"><label asp-for="LyDoTamDung">Lý do tạm dừng</label><input asp-for="LyDoTamDung" class="form-control" maxlength="255" /><span asp-validation-for="LyDoTamDung"></span></div>
+    <button class="btn btn-primary">Lưu cấu hình</button>
+</form>

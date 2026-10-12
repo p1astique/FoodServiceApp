@@ -7,7 +7,9 @@
     {
         ("", "Tất cả"),
         ("ChoXacNhan", "Chờ xác nhận"),
-        ("DaXacNhan", "Đang chuẩn bị"),
+        ("DaXacNhan", "Đã xác nhận"),
+        ("DangChuanBi", "Đang chuẩn bị"),
+        ("SanSangGiao", "Sẵn sàng giao"),
         ("DangGiao", "Đang giao"),
         ("DaGiao", "Hoàn thành"),
         ("DaHuy", "Đã hủy"),
@@ -46,7 +48,7 @@ else
                     <tr>
                         <td>#@don.MaDonHang</td>
                         <td>@don.NgayDat.ToString("HH:mm dd/MM")</td>
-                        <td>@string.Join(", ", don.ChiTiets.Select(c => $"{c.MonAn?.TenMon} x{c.SoLuong}"))</td>
+                        <td>@string.Join(", ", don.ChiTiets.Select(c => $"{c.TenMon} x{c.SoLuong}"))</td>
                         <td>@don.DiaChiGiaoHang</td>
                         <td>@don.TongTien.ToString("N0")đ</td>
                         <td>@await Html.PartialAsync("~/Views/Dashboard/_BadgeTrangThaiDonHang.cshtml", don.TrangThai)</td>
@@ -65,20 +67,27 @@ else
                                     @Html.AntiForgeryToken()
                                     <input type="hidden" name="id" value="@don.MaDonHang" />
                                     <input type="hidden" name="trangThaiMoi" value="DaHuy" />
+                                    <input type="hidden" name="lyDo" value="Gian hàng từ chối đơn" />
                                     <button type="submit" class="btn btn-danger btn-sm"
                                             onclick="return confirm('Hủy đơn #@don.MaDonHang?')">Hủy</button>
                                 </form>
                             }
                             else if (don.TrangThai == "DaXacNhan")
                             {
-                                <span class="text-muted" style="font-size:12px;">Đang chờ tài xế nhận đơn</span>
                                 <form asp-action="CapNhatTrangThai" method="post" style="display:inline;">
                                     @Html.AntiForgeryToken()
                                     <input type="hidden" name="id" value="@don.MaDonHang" />
-                                    <input type="hidden" name="trangThaiMoi" value="DaHuy" />
-                                    <button type="submit" class="btn btn-danger btn-sm"
-                                            onclick="return confirm('Hủy đơn #@don.MaDonHang?')">Hủy</button>
+                                    <input type="hidden" name="trangThaiMoi" value="DangChuanBi" />
+                                    <button type="submit" class="btn btn-primary btn-sm">Bắt đầu chuẩn bị</button>
                                 </form>
+                            }
+                            else if (don.TrangThai == "DangChuanBi")
+                            {
+                                <form asp-action="CapNhatTrangThai" method="post" style="display:inline;">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@don.MaDonHang" /><input type="hidden" name="trangThaiMoi" value="SanSangGiao" /><button type="submit" class="btn btn-primary btn-sm">Sẵn sàng giao</button></form>
+                            }
+                            else if (don.TrangThai == "SanSangGiao")
+                            {
+                                <span class="text-muted" style="font-size:12px;">Đang chờ tài xế nhận đơn</span>
                             }
                             else if (don.TrangThai == "DangGiao")
                             {

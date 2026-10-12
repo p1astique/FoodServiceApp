@@ -1,3 +1,4 @@
+using FoodServiceApp.Maui.Services;
 using FoodServiceApp.Maui.Models;
 
 namespace FoodServiceApp.Maui.Views;
@@ -13,9 +14,9 @@ public partial class VendorLoginPage : ContentPage
     {
         LblLoi.IsVisible = false;
 
-        if (string.IsNullOrWhiteSpace(EntryEmail.Text) || !EntryEmail.Text.Contains('@'))
+        if (string.IsNullOrWhiteSpace(EntryEmail.Text))
         {
-            HienLoi("Email không hợp lệ");
+            HienLoi("Vui lòng nhập tên đăng nhập");
             return;
         }
         if (string.IsNullOrWhiteSpace(EntryMatKhau.Text))
@@ -30,38 +31,11 @@ public partial class VendorLoginPage : ContentPage
 
         try
         {
-            // TODO: gọi ASP.NET Core Web API thật: POST /api/gian-hang/dang-nhap { email, matKhau }
-            await Task.Delay(500);
-
-            var gianHang = MockData.DanhSachGianHang.FirstOrDefault(g =>
-                string.Equals(g.Email, EntryEmail.Text.Trim(), StringComparison.OrdinalIgnoreCase) &&
-                g.MatKhau == EntryMatKhau.Text);
-
-            if (gianHang is null)
-            {
-                HienLoi("Email hoặc mật khẩu không đúng");
-                return;
-            }
-
-            if (gianHang.TrangThaiDangKy == TrangThaiDangKyGianHang.ChoDuyet)
-            {
-                HienLoi("Hồ sơ gian hàng của bạn đang chờ quản trị viên duyệt");
-                return;
-            }
-            if (gianHang.TrangThaiDangKy == TrangThaiDangKyGianHang.TuChoi)
-            {
-                HienLoi("Hồ sơ gian hàng đã bị từ chối. Vui lòng liên hệ quản trị viên");
-                return;
-            }
-            if (gianHang.TaiKhoanBiKhoa)
-            {
-                HienLoi("Tài khoản gian hàng đang bị khóa. Vui lòng liên hệ quản trị viên");
-                return;
-            }
-
-            MockData.GianHangHienTai = gianHang;
+            await ApiClient.LoginAsync("GianHang", EntryEmail.Text, EntryMatKhau.Text);
+            VendorWorkspace.Clear();
             await Shell.Current.GoToAsync(nameof(VendorHomePage));
         }
+        catch (Exception ex) { HienLoi(ex.Message); }
         finally
         {
             LoadingIndicator.IsVisible = false;
@@ -84,5 +58,12 @@ public partial class VendorLoginPage : ContentPage
     private async void OnQuayLaiTapped(object sender, EventArgs e)
     {
         await Shell.Current.GoToAsync("..");
+    }
+    private async void OnConfigureServerClicked(object sender, EventArgs e)
+    {
+        var url = await DisplayPromptAsync("Kết nối máy chủ", "Địa chỉ Web API", initialValue: ApiClient.BaseUrl);
+        if (string.IsNullOrWhiteSpace(url)) return;
+        try { ApiClient.BaseUrl = url; ApiClient.Logout("GianHang"); ApiClient.Logout("QuanTri"); VendorWorkspace.Clear(); }
+        catch (Exception ex) { HienLoi(ex.Message); }
     }
 }

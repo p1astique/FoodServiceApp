@@ -26,7 +26,7 @@ else
         {
             <div class="cart-row">
                 <div class="cart-thumb">🍲</div>
-                <div class="cart-name">@item.TenMon</div>
+                <div class="cart-name">@item.TenMon@if (!string.IsNullOrWhiteSpace(item.TuyChonMon)) { <div class="text-muted" style="font-size:11px">@item.TuyChonMon</div> }</div>
                 <div class="cart-unit-price">@item.Gia.ToString("N0")đ</div>
                 <form asp-action="CapNhat" method="post" style="display:flex;">
                     @Html.AntiForgeryToken()

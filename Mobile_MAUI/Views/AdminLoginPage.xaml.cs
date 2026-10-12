@@ -1,3 +1,4 @@
+using FoodServiceApp.Maui.Services;
 using FoodServiceApp.Maui.Models;
 
 namespace FoodServiceApp.Maui.Views;
@@ -13,9 +14,9 @@ public partial class AdminLoginPage : ContentPage
     {
         LblLoi.IsVisible = false;
 
-        if (string.IsNullOrWhiteSpace(EntryEmail.Text) || !EntryEmail.Text.Contains('@'))
+        if (string.IsNullOrWhiteSpace(EntryEmail.Text))
         {
-            HienLoi("Email không hợp lệ");
+            HienLoi("Vui lòng nhập tên đăng nhập");
             return;
         }
         if (string.IsNullOrWhiteSpace(EntryMatKhau.Text))
@@ -30,22 +31,10 @@ public partial class AdminLoginPage : ContentPage
 
         try
         {
-            // TODO: gọi ASP.NET Core Web API thật: POST /api/quan-tri/dang-nhap { email, matKhau }
-            await Task.Delay(500);
-
-            var admin = MockData.QuanTriVienHienTai;
-            bool dungThongTin =
-                string.Equals(admin.Email, EntryEmail.Text.Trim(), StringComparison.OrdinalIgnoreCase) &&
-                admin.MatKhau == EntryMatKhau.Text;
-
-            if (!dungThongTin)
-            {
-                HienLoi("Email hoặc mật khẩu không đúng");
-                return;
-            }
-
+            await ApiClient.LoginAsync("QuanTri", EntryEmail.Text, EntryMatKhau.Text);
             await Shell.Current.GoToAsync(nameof(AdminHomePage));
         }
+        catch (Exception ex) { HienLoi(ex.Message); }
         finally
         {
             LoadingIndicator.IsVisible = false;
@@ -63,5 +52,12 @@ public partial class AdminLoginPage : ContentPage
     private async void OnQuayLaiTapped(object sender, EventArgs e)
     {
         await Shell.Current.GoToAsync("..");
+    }
+    private async void OnConfigureServerClicked(object sender, EventArgs e)
+    {
+        var url = await DisplayPromptAsync("Kết nối máy chủ", "Địa chỉ Web API", initialValue: ApiClient.BaseUrl);
+        if (string.IsNullOrWhiteSpace(url)) return;
+        try { ApiClient.BaseUrl = url; ApiClient.Logout("GianHang"); ApiClient.Logout("QuanTri"); VendorWorkspace.Clear(); }
+        catch (Exception ex) { HienLoi(ex.Message); }
     }
 }

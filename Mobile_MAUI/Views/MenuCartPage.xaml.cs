@@ -1,3 +1,4 @@
+using FoodServiceApp.Maui.Services;
 using FoodServiceApp.Maui.Models;
 using System.Collections.ObjectModel;
 
@@ -15,21 +16,24 @@ public partial class MenuCartPage : ContentPage
         InitializeComponent();
     }
 
-    protected override void OnAppearing()
+    protected override async void OnAppearing()
     {
         base.OnAppearing();
         if (GianHang is null) return;
 
-        LblIconGianHang.Text = GianHang.HinhAnh;
+        LblIconGianHang.Source = GianHang.ImageUrl;
         LblTenGianHang.Text = GianHang.TenGianHang;
-        LblThongTinGianHang.Text = $"⭐ {GianHang.DanhGia}   {GianHang.ThoiGianGiaoPhut} phút giao";
+        LblThongTinGianHang.Text = $"⭐ {GianHang.DanhGia:0.0}";
 
-        // TODO: thay bằng GET /api/gian-hang/{id}/mon-an khi có API thật
-        DsMonAn.ItemsSource = MockData.DanhSachMonAn
-            .Where(m => m.GianHangId == GianHang.Id)
-            .ToList();
+        await ApiUi.Run(this, async () => {
+            DsMonAn.ItemsSource = null;
+            var items = await ApiClient.GetAsync<List<MonAn>>($"api/catalog/stores/{GianHang.Id}/items", null);
+            DsMonAn.ItemsSource = items;
+            _gioHang.RemoveAll(x => items.All(m => m.Id != x.MonAn.Id));
+            foreach (var line in _gioHang) line.MonAn = items.Single(x => x.Id == line.MonAn.Id);
+            CapNhatThanhGioHang();
+        });
     }
-
     private void OnThemMonClicked(object sender, EventArgs e)
     {
         if (sender is not Button { CommandParameter: MonAn mon }) return;

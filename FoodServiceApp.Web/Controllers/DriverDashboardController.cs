@@ -32,11 +32,11 @@ namespace FoodServiceApp.Web.Controllers
             ViewBag.DonDangGiao = await _db.DonHangs
                 .Include(d => d.GianHang)
                 .Include(d => d.ChiTiets)
-                .Where(d => d.MaTaiXe == CurrentTaiXeId && d.TrangThai == "DangGiao")
+                .Where(d => d.MaTaiXe == CurrentTaiXeId && (d.TrangThai == "TaiXeDaNhan" || d.TrangThai == "DangGiao"))
                 .FirstOrDefaultAsync();
 
             ViewBag.SoDonChoNhan = await _db.DonHangs.CountAsync(d =>
-                d.TrangThai == "DaXacNhan" && d.MaTaiXe == null);
+                d.TrangThai == "SanSangGiao" && d.MaTaiXe == null);
 
             return View();
         }

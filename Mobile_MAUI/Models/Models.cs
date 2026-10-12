@@ -4,6 +4,7 @@ namespace FoodServiceApp.Maui.Models;
 
 public class GianHang
 {
+    public string? ImageUrl => Services.ApiClient.ImageUrl(HinhAnh);
     public string Id { get; set; } = "";
     public string TenGianHang { get; set; } = "";
     public string DiaChi { get; set; } = "";
@@ -20,6 +21,33 @@ public class GianHang
     public bool TaiKhoanBiKhoa { get; set; } = false;     // do quản trị viên khóa khi có vi phạm/khiếu nại
     public DateTime NgayDangKy { get; set; } = DateTime.Now;
     public TrangThaiDangKyGianHang TrangThaiDangKy { get; set; } = TrangThaiDangKyGianHang.DaDuyet;
+}
+
+public class ChienDichQuangCao
+{
+    public int MaChienDich { get; set; }
+    public string TenChienDich { get; set; } = "";
+    public string LoaiViTri { get; set; } = "NoiBat";
+    public string TieuDe { get; set; } = "";
+    public string? NoiDung { get; set; }
+    public string? HinhAnh { get; set; }
+    public DateTime NgayBatDau { get; set; }
+    public DateTime NgayKetThuc { get; set; }
+    public decimal NganSach { get; set; }
+    public string TrangThai { get; set; } = "BanNhap";
+    public int LuotHienThi { get; set; }
+    public int LuotTuongTac { get; set; }
+}
+
+public class CauHinhGianHang
+{
+    public TimeSpan GioMoCua { get; set; } = new(7, 0, 0);
+    public TimeSpan GioDongCua { get; set; } = new(22, 0, 0);
+    public bool TuDongDongMo { get; set; }
+    public bool TamDungNhanDon { get; set; }
+    public string? LyDoTamDung { get; set; }
+    public string? ThongBaoCuaHang { get; set; }
+    public int ThoiGianChuanBiPhut { get; set; } = 20;
 }
 
 /// <summary>Trạng thái duyệt hồ sơ khi gian hàng đăng ký tham gia nền tảng.</summary>
@@ -43,6 +71,12 @@ public static class TrangThaiDangKyGianHangExtensions
 
 public class MonAn
 {
+    public string? ImageUrl => Services.ApiClient.ImageUrl(HinhAnh);
+    public int MaDanhMuc { get; set; }
+    public string? MoTa { get; set; }
+    public string? KichCo { get; set; }
+    public string? Topping { get; set; }
+    public string? MucCay { get; set; }
     public string Id { get; set; } = "";
     public string TenMon { get; set; } = "";
     public decimal Gia { get; set; }
@@ -97,7 +131,7 @@ public class VanDeHeThong
     public TrangThaiVanDe TrangThai { get; set; } = TrangThaiVanDe.MoiPhatSinh;
 }
 
-public enum LoaiGiamGia { PhanTram, SoTien }
+public enum LoaiGiamGia { PhanTram, SoTien, PhiVanChuyen }
 
 public static class LoaiGiamGiaExtensions
 {
@@ -105,6 +139,7 @@ public static class LoaiGiamGiaExtensions
     {
         LoaiGiamGia.PhanTram => "Giảm theo %",
         LoaiGiamGia.SoTien => "Giảm số tiền cố định",
+        LoaiGiamGia.PhiVanChuyen => "Giảm phí vận chuyển",
         _ => ""
     };
 }
@@ -116,6 +151,8 @@ public static class LoaiGiamGiaExtensions
 /// </summary>
 public class KhuyenMai
 {
+    public int? MaMonAn { get; set; }
+    public int? MaDanhMuc { get; set; }
     public string Id { get; set; } = "";
     public string MaCode { get; set; } = "";
     public string TenChuongTrinh { get; set; } = "";
@@ -127,14 +164,17 @@ public class KhuyenMai
     public DateTime NgayBatDau { get; set; } = DateTime.Now;
     public DateTime NgayKetThuc { get; set; } = DateTime.Now.AddMonths(1);
     public string? GianHangId { get; set; }                // null/"" = áp dụng cho TOÀN HỆ THỐNG
-    public int SoLuongToiDa { get; set; } = 100;           // giới hạn tổng lượt sử dụng
+    public int? SoLuongToiDa { get; set; }
     public int SoLuongDaDung { get; set; } = 0;
+    public bool MoiKhachMotLan { get; set; }
+    public bool GiamPhiVanChuyen { get; set; }
+    public decimal? GiamPhiVanChuyenToiDa { get; set; }
     public bool DangHoatDong { get; set; } = true;         // do người tạo bật/tắt thủ công
 
     public bool ApDungToanHeThong => string.IsNullOrEmpty(GianHangId);
     public bool ConHan => DateTime.Now <= NgayKetThuc;
     public bool ChuaBatDau => DateTime.Now < NgayBatDau;
-    public bool ConLuot => SoLuongDaDung < SoLuongToiDa;
+    public bool ConLuot => SoLuongToiDa == null || SoLuongDaDung < SoLuongToiDa;
 
     /// <summary>Trạng thái hiển thị tổng hợp cho danh sách quản lý.</summary>
     public string TrangThaiHienThi
@@ -150,7 +190,9 @@ public class KhuyenMai
     }
 
     /// <summary>Mô tả ngắn gọn mức giảm, VD "Giảm 20% (tối đa 30.000đ)" hoặc "Giảm 15.000đ".</summary>
-    public string GiaTriGiamHienThi => LoaiGiam == LoaiGiamGia.PhanTram
+    public string GiaTriGiamHienThi => GiamPhiVanChuyen
+        ? "Giảm phí vận chuyển" + (GiamPhiVanChuyenToiDa is decimal phi ? $" (tối đa {phi:N0}đ)" : "")
+        : LoaiGiam == LoaiGiamGia.PhanTram
         ? $"Giảm {GiaTriGiam:0.#}%" + (GiamToiDa is decimal tran ? $" (tối đa {tran:N0}đ)" : "")
         : $"Giảm {GiaTriGiam:N0}đ";
 
@@ -217,11 +259,14 @@ public static class TrangThaiDonHangExtensions
 
 public class DonHang
 {
+    public decimal? TongTienServer { get; set; }
     public string Id { get; set; } = "";
     public string GianHangId { get; set; } = "";         // dùng để lọc đơn hàng theo từng gian hàng (đối tác)
     public string TenGianHang { get; set; } = "";
     public List<MucGioHang> ChiTiet { get; set; } = new();
     public TrangThaiDonHang TrangThai { get; set; }
+    public string TrangThaiMayChu { get; set; } = "ChoXacNhan";
+    public string HanhDongGianHang => TrangThaiMayChu == "DaXacNhan" ? "Bắt đầu chuẩn bị" : "Sẵn sàng giao";
     public string DiaChiGiao { get; set; } = "";
     public DateTime NgayDat { get; set; }
 
@@ -230,7 +275,7 @@ public class DonHang
     public string? TaiXeId { get; set; }             // null = chưa có tài xế nhận
     public decimal PhiGiaoHang { get; set; } = 15000; // tiền tài xế nhận cho đơn này
 
-    public decimal TongTien => ChiTiet.Sum(x => x.ThanhTien);
+    public decimal TongTien => TongTienServer ?? ChiTiet.Sum(x => x.ThanhTien);
 }
 
 /// <summary>
@@ -578,7 +623,7 @@ public static class MockData
         return (true, giam, $"Áp dụng thành công: giảm {giam:N0}đ");
     }
 
-    /// <summary>Gộp toàn bộ đơn hàng từ mọi nguồn mock hiện có — dùng cho thống kê & báo cáo toàn hệ thống.</summary>
+    /// <summary>Gộp toàn bộ đơn hàng từ mọi nguồn mock hiện có — dùng cho thống kê và báo cáo toàn hệ thống.</summary>
     public static IEnumerable<DonHang> TatCaDonHangHeThong =>
         LichSuDonHang.Concat(DonHangChoTaiXe).Concat(DonHangCuaGianHang);
 

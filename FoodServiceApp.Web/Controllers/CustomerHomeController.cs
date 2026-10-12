@@ -160,7 +160,8 @@ namespace FoodServiceApp.Web.Controllers
 
         [HttpPost("GianHang/{maGianHang:int}/them-gio")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ThemVaoGio(int maGianHang, int maMonAn, int soLuong = 1, bool veTrangMon = false)
+        public async Task<IActionResult> ThemVaoGio(int maGianHang, int maMonAn, int soLuong = 1, bool veTrangMon = false,
+            string? kichCo = null, string? topping = null, string? mucCay = null, string? ghiChuMon = null)
         {
             soLuong = Math.Clamp(soLuong, 1, 50);
 
@@ -184,6 +185,15 @@ namespace FoodServiceApp.Web.Controllers
                 return RedirectToAction("ChiTiet", new { id = maGianHang });
             }
 
+            static bool HopLe(string? value, string? allowed) => string.IsNullOrWhiteSpace(value) ||
+                (allowed ?? "").Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+                    .Contains(value, StringComparer.OrdinalIgnoreCase);
+            if (!HopLe(kichCo, monAn.KichCo) || !HopLe(topping, monAn.Topping) || !HopLe(mucCay, monAn.MucCay))
+            {
+                TempData["LoiThongBao"] = "Tùy chọn món không hợp lệ.";
+                return RedirectToAction("ChiTietMon", new { id = maMonAn });
+            }
+            var options = new[] { kichCo, topping, mucCay, string.IsNullOrWhiteSpace(ghiChuMon) ? null : $"Ghi chú: {ghiChuMon.Trim()}" };
             var loi = _cart.ThemMon(maGianHang, gianHang.TenCuaHang, new CartItem
             {
                 MaMonAn = monAn.MaMonAn,
@@ -191,6 +201,7 @@ namespace FoodServiceApp.Web.Controllers
                 Gia = monAn.Gia,
                 SoLuong = soLuong,
                 HinhAnh = monAn.HinhAnh,
+                TuyChonMon = string.Join(" · ", options.Where(x => !string.IsNullOrWhiteSpace(x))),
             });
 
             if (loi != null) TempData["LoiThongBao"] = loi;

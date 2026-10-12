@@ -18,11 +18,16 @@
 **/appsettings.Development.local.json
 **/appsettings.Local.json
 
-# Test and coverage output
+# Test, coverage and local analysis output
 TestResults/
 coverage/
 *.coverage
 *.coveragexml
+*.log
+.tmp/
+.codegraph/
+tests/*-results.txt
+tests/*-server.log
 
 # OS files
 .DS_Store
